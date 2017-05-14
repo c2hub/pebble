@@ -2,5 +2,9 @@
 name = "pebble"
 version = "0.1.0"
 authors = ["Lukáš Hozda <luk.hozda@gmail.com>"]
+license = "Fair"
 
 [dependencies]
+serde = "*"
+serde_derive = "*"
+toml = "*"
