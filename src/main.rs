@@ -8,6 +8,7 @@ extern crate serde_derive;
 mod commands;
 mod config;
 mod types;
+mod util;
 
 use commands::*;
 use types::*;
@@ -24,8 +25,35 @@ fn main()
 		{
 			match arguments.len()
 			{
-				2 => new_pebble(&arguments[2], PebbleType::Executable),
-				_ => {},
+				3 => new_pebble(&arguments[2], PebbleType::Executable),
+				4 => match arguments[3].as_ref()
+				{
+					"lib"|
+					"libstatic"|
+					"staticlib" =>
+						new_pebble(&arguments[2], PebbleType::StaticLib),
+					"dynamic"|
+					"dynamiclib"|
+					"sharedlib"|
+					"libshared"|
+					"shared" =>
+						new_pebble(&arguments[2], PebbleType::SharedLib),
+					"executable"|
+					"bin"|
+					"binary"|
+					"exe" =>
+						new_pebble(&arguments[2], PebbleType::Executable),
+					x =>
+					{
+						println!("unknown pebble type '{}'", x);
+						exit(-1);
+					}
+				},
+				_ =>
+				{
+					println!("usage: pebble new <name> <type>");
+					exit(-1);
+				},
 			}
 		}
 		x =>
