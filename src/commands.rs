@@ -1,6 +1,7 @@
 use types::PebbleType;
 use util::*;
 
+use std::process::Command;
 use std::env::set_current_dir;
 use std::fs::{create_dir_all, create_dir, File};
 use std::io::Write;
@@ -49,26 +50,27 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 		{
 			PebbleType::Executable =>
 			{
-				let mut recipef = match File::create("recipe.txt")
+				match File::create("recipe.txt")
 				{
-					Ok(f) => f,
+					Ok(mut f) => 
+						{let _ = write!(f, "{}", EXECUTABLE_RECIPE_STUB.replace("[[name]]", name));},
 					Err(_) =>
 					{
 						println!("failed to create recipe file");
 						exit(-1);
 					}
 				};
-				let _ = write!(recipef, "{}", EXECUTABLE_RECIPE_STUB.replace("[[name]]", name));
-				let mut hellof = match File::create("src/main.c2")
+				
+				match File::create("src/main.c2")
 				{
-					Ok(f) => f,
+					Ok(mut f) =>
+						{let _ = write!(f, "{}", C2_HELLO_WORLD.replace("[[name]]", name));},
 					Err(_) =>
 					{
 						println!("failed to create src/main.c2");
 						exit(-1);
 					}
 				};
-				let _ = write!(hellof, "{}", C2_HELLO_WORLD.replace("[[name]]", name));
 			},
 			PebbleType::StaticLib =>
 			{
@@ -79,6 +81,23 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 
 			}
 		}
+
+		match File::create("pebble.toml")
+		{
+			Ok(mut f) =>
+				{let _ = write!(f, "{}", PEBBLE_TOML.replace("[[name]]", name));},
+			Err(_) =>
+			{
+				println!("failed to create pebble.toml");
+				exit(-1);
+			}
+		}
+		
+		Command::new("git")
+			.arg("init")
+			.arg(".")
+			.spawn()
+			.expect("failed to init git repository");
 	}
 	else
 	{
