@@ -1,0 +1,8 @@
+//hello world for shared libraries
+module [[name]];
+import stdio as io;
+
+public func void [[name]]()
+{
+	io.printf("Hello, World!");
+}

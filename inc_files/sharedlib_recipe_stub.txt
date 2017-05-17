@@ -1,0 +1,7 @@
+lib [[name]] shared
+	src/lib.c2
+end
+
+executable test
+	tests.c2
+end
