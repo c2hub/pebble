@@ -1,4 +1,5 @@
 extern crate recipe_reader;
+extern crate ansi_term;
 extern crate serde;
 extern crate toml;
 
