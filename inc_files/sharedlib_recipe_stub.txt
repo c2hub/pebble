@@ -1,7 +1,11 @@
 lib [[name]] shared
+	$export [[name]]
+	$generate-c
 	src/lib.c2
 end
 
 executable test
+	$generate-c
+	src/lib.c2
 	tests.c2
 end

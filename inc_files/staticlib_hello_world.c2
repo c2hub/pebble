@@ -2,7 +2,7 @@
 module [[name]];
 import stdio as io;
 
-public func void [[name]]()
+public func void [[name]]_main()
 {
 	io.printf("Hello, World!");
 }

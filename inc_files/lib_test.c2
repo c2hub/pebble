@@ -4,6 +4,6 @@ import [[name]] as lib;
 
 public func int32 main(int32 argc, char** argv)
 {
-	lib.[[name]]();
+	lib.[[name]]_main();
 	return 0;
 }
