@@ -5,4 +5,5 @@ import stdio local;
 public func int32 main(int32 argc, char*[] argv)
 {
 	printf("Hello, world!");
+	return 0;
 }

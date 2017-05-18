@@ -1,4 +1,4 @@
 executable [[name]]
 	$generate-c
-	main.c2
+	src/main.c2
 end

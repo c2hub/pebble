@@ -1,3 +1,5 @@
+#![feature(box_syntax)]
+
 extern crate recipe_reader;
 extern crate ansi_term;
 extern crate serde;
@@ -44,6 +46,41 @@ fn main()
 					"binary"|
 					"exe" =>
 						new_pebble(&arguments[2], PebbleType::Executable),
+					x =>
+					{
+						println!("unknown pebble type '{}'", x);
+						exit(-1);
+					}
+				},
+				_ =>
+				{
+					println!("usage: pebble new <name> <type>");
+					exit(-1);
+				},
+			}
+		}
+		"init" =>
+		{
+			match arguments.len()
+			{
+				3 => init_pebble(&arguments[2], PebbleType::Executable),
+				4 => match arguments[3].as_ref()
+				{
+					"lib"|
+					"libstatic"|
+					"staticlib" =>
+						init_pebble(&arguments[2], PebbleType::StaticLib),
+					"dynamic"|
+					"dynamiclib"|
+					"sharedlib"|
+					"libshared"|
+					"shared" =>
+						init_pebble(&arguments[2], PebbleType::SharedLib),
+					"executable"|
+					"bin"|
+					"binary"|
+					"exe" =>
+						init_pebble(&arguments[2], PebbleType::Executable),
 					x =>
 					{
 						println!("unknown pebble type '{}'", x);
