@@ -132,6 +132,10 @@ fn main()
 		{
 			_ => run(arguments.clone().into_iter().skip(2).collect()),
 		},
+		"test" => match arguments.len()
+		{
+			_ => test(arguments.clone().into_iter().skip(2).collect()),
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
