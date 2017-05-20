@@ -332,7 +332,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 						{
 							PebbleType::StaticLib => TargetType::StaticLib,
 							PebbleType::SharedLib => TargetType::SharedLib,
-							_ => TargetType::Temporary, //can't occur
+							_ => unreachable!(), //already certain it's a library, heh
 						},
 						files: files.clone(),
 						options: TargetOptions
@@ -555,4 +555,80 @@ pub fn remove(filename: &String)
 		}
 	}
 	recipe.write();
+}
+
+pub fn build()
+{
+	let mut recipe = Recipe::new();
+	
+	if Recipe::find() != None
+		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path));}
+	else
+		{println!("  error: no recipe found in path"); exit(-1);}
+	
+	if !Path::new("pebble.toml").exists()
+	{
+		println!("  error: not a valid pebble, missing pebble.toml");
+		exit(-1);
+	}
+
+	let name = match recipe.path.parent().unwrap().file_stem()
+	{
+		Some(n) => match n.to_str()
+		{
+			Some(s) => s,
+			None =>
+			{
+				println!("  error: could not read name string");
+				exit(-1);
+			}
+		},
+		None =>
+		{
+			println!("  error: invalid project path");
+			exit(-1);
+		}
+	};
+
+	println!("  {} [{}]",
+		Yellow.bold().paint("compiling"),
+		Green.bold().paint(name)
+	);
+
+	let output = Command::new("c2c")
+		.arg(name)
+		.output()
+		.expect("  error: failed to execute c2c");
+	
+	if !output.status.success()
+	{ 
+		println!("  {} during compilation:\n", Red.bold().paint("error"));
+		unsafe { print!("{}",
+			// on one hand, I feel smart for knowing how to repaint the string
+			// in one function call, on the other, I feel retarded for having
+			// to do this, hopefully I will figure out a better solution later
+			String::from_utf8_unchecked(output.stderr.to_vec()).lines().fold
+			(	String::new(),
+				|acc, current|
+				{
+					if current.contains("error")
+					|| current.contains(".c2:")
+					{
+						return acc + &Red.bold().paint(current).to_string() + "\n";
+					}
+					else if current.contains("^")
+					{
+						return acc + &Green.bold().paint(current).to_string() + "\n";
+					}
+					else
+					{
+					   	return acc + current + "\n";
+					}
+				}
+			)
+		); }
+		exit(-1);
+	}
+	else
+		{println!(" {}", Yellow.bold().paint("  build succeeded"));}
 }

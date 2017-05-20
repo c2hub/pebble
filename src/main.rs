@@ -119,6 +119,15 @@ fn main()
 				exit(-1);
 			}
 		},
+		"build" => match arguments.len()
+		{
+			2 => build(),
+			_ =>
+			{
+				println!("usage: pebble build");
+				exit(-1);
+			}
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
