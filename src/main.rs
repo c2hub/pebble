@@ -1,4 +1,3 @@
-//#![feature(box_syntax)]
 #![feature(vec_remove_item)]
 
 extern crate recipe_reader;
