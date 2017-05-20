@@ -349,7 +349,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 						}
 					}
 				);
-				files.push("test.c2".to_string());
+				files.push("tests.c2".to_string());
 				recipe.targets.push(
 					Target
 					{
