@@ -421,10 +421,12 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 pub fn scan()
 {
 	let mut recipe = Recipe::new();
+	
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path));}
 	else
 		{println!("  error: no recipe found in path"); exit(-1);}
+	
 	if !Path::new("pebble.toml").exists()
 	{
 		println!("  error: not a valid pebble, missing pebble.toml");
@@ -457,7 +459,6 @@ pub fn scan()
 
 	for mut t in &mut recipe.targets
 	{
-		//let mut nonexistant = Vec::new();
 		for file in t.files.clone()
 		{
 			if !Path::new(&file).exists()
@@ -468,6 +469,89 @@ pub fn scan()
 					file,
 				);
 			}
+		}
+	}
+
+	recipe.write();
+}
+
+pub fn add(filename: &String)
+{
+	let mut recipe = Recipe::new();
+	
+	if Recipe::find() != None
+		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path));}
+	else
+		{println!("  error: no recipe found in path"); exit(-1);}
+	
+	if !Path::new("pebble.toml").exists()
+	{
+		println!("  error: not a valid pebble, missing pebble.toml");
+		exit(-1);
+	}
+
+	if Path::new(filename).exists()
+	{
+		for mut t in &mut recipe.targets
+		{
+			t.files.push(filename.clone());
+
+			println!("  {} {} to [{}]",
+				Yellow.bold().paint("added"),
+				filename,
+				Green.bold().paint(t.name.clone())
+			);
+		}
+	}
+	else if !Path::new(filename).exists()
+	&& Path::new(&("src/".to_string() + filename)).exists()
+	{
+		for mut t in &mut recipe.targets
+		{
+			t.files.push("src/".to_string() + filename);
+
+			println!("  {} src/{} to [{}]",
+				Yellow.bold().paint("added"),
+				filename,
+				Green.bold().paint(t.name.clone())
+			);
+		}
+	}
+	else
+	{
+		println!("  error: '{}' not found", filename);
+		exit(-1);
+	}
+
+	recipe.write();
+}
+
+pub fn remove(filename: &String)
+{
+	let mut recipe = Recipe::new();
+	
+	if Recipe::find() != None
+		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path));}
+	else
+		{println!("  error: no recipe found in path"); exit(-1);}
+	
+	if !Path::new("pebble.toml").exists()
+	{
+		println!("  error: not a valid pebble, missing pebble.toml");
+		exit(-1);
+	}
+	for mut t in &mut recipe.targets
+	{
+		if t.files.contains(filename)
+		|| t.files.contains(&("src/".to_string() + filename))
+		{
+			t.files.remove_item(&filename);
+			t.files.remove_item(&("src/".to_string() + filename));
+			println!("  {} {} from [{}]",
+				Yellow.bold().paint("removed"),
+				filename,
+				Green.bold().paint(t.name.clone())
+			);
 		}
 	}
 	recipe.write();

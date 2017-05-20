@@ -101,6 +101,24 @@ fn main()
 				exit(-1);
 			}
 		},
+		"add" => match arguments.len()
+		{
+			3 => add(&arguments[2]),
+			_ =>
+			{
+				println!("usage: pebble add 'filename'");
+				exit(-1);
+			}
+		},
+		"remove" | "del" => match arguments.len()
+		{
+			3 => remove(&arguments[2]),
+			_ =>
+			{
+				println!("usage: pebble remove 'filename'");
+				exit(-1);
+			}
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
