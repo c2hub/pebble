@@ -1,3 +1,7 @@
+use toml;
+use std::fs::File;
+use std::io::Read;
+use std::process::exit;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config
@@ -40,4 +44,33 @@ pub struct BuildCfg
 	pub post: Option<Vec<String>>,
 	pub install: Option<Vec<String>>,
 	pub uninstall: Option<Vec<String>>
+}
+
+#[allow(dead_code)]
+impl Config
+{
+	pub fn read() -> Result<Config, toml::de::Error>
+	{
+		let mut me = match File::open("pebble.toml")
+		{
+			Ok(f) => f,
+			Err(_) =>
+			{
+				println!("  error: failed to open pebble.toml");
+				exit(-1);
+			}
+		};
+		let mut contents = String::new();
+		if let Err(_) = me.read_to_string(&mut contents)
+		{
+			println!("  error: failed to read pebble.toml");
+			exit(-1);
+		}
+		toml::from_str(contents.as_ref())
+	}
+
+	pub fn write(&self) -> Result<String, toml::ser::Error>
+	{
+		toml::to_string(&self)
+	}
 }
