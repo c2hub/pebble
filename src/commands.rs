@@ -1,7 +1,7 @@
 use types::PebbleType;
 use util::*;
 
-use ansi_term::Colour::{Yellow, Green};
+use ansi_term::Colour::{Yellow, Green, Red};
 use recipe_reader::*;
 
 use std::process::Command;
@@ -10,6 +10,7 @@ use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
 use std::io::Write;
 use std::process::exit;
 use std::path::{Path, PathBuf};
+use std::ops::Deref;
 
 pub fn new_pebble(path_str: &String, kind: PebbleType)
 {
@@ -184,7 +185,6 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 	}
 }
 
-//TODO
 pub fn init_pebble(path_str: &String, kind: PebbleType)
 { 
 	let cwd = match current_dir()
@@ -416,4 +416,59 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 		); 
 		exit(-1);
 	}
+}
+
+pub fn scan()
+{
+	let mut recipe = Recipe::new();
+	if Recipe::find() != None
+		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path));}
+	else
+		{println!("  error: no recipe found in path"); exit(-1);}
+	if !Path::new("pebble.toml").exists()
+	{
+		println!("  error: not a valid pebble, missing pebble.toml");
+		exit(-1);
+	}
+
+	for f in match read_dir(Path::new("src"))
+		{ Ok(r) => r, _ => {println!(" error: failed to open source directory"); exit(-1);} }
+	{
+		let file = match f
+		{
+			Ok(fl) => fl,
+			Err(_) =>
+			{
+				println!("  error: failed to read a directory entry in src");
+				exit(-1);
+			}
+		};
+
+		if !recipe.targets[0].files.contains(&file.path().to_string_lossy().deref().to_string())
+		{
+			for mut t in &mut recipe.targets
+				{t.files.insert(0, file.path().to_string_lossy().deref().to_string());}
+			println!("  {} {}",
+				Yellow.bold().paint("adding"),
+				file.path().to_string_lossy(),
+			);
+		}
+	}
+
+	for mut t in &mut recipe.targets
+	{
+		//let mut nonexistant = Vec::new();
+		for file in t.files.clone()
+		{
+			if !Path::new(&file).exists()
+			{
+				t.files.remove_item(&file);
+				println!("  {} {}",
+					Red.bold().paint("removing"),
+					file,
+				);
+			}
+		}
+	}
+	recipe.write();
 }

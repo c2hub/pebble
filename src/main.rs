@@ -1,4 +1,5 @@
-#![feature(box_syntax)]
+//#![feature(box_syntax)]
+#![feature(vec_remove_item)]
 
 extern crate recipe_reader;
 extern crate ansi_term;
@@ -59,41 +60,47 @@ fn main()
 				},
 			}
 		}
-		"init" =>
+		"init" => match arguments.len()
 		{
-			match arguments.len()
+			3 => init_pebble(&arguments[2], PebbleType::Executable),
+			4 => match arguments[3].as_ref()
 			{
-				3 => init_pebble(&arguments[2], PebbleType::Executable),
-				4 => match arguments[3].as_ref()
+				"lib"|
+				"libstatic"|
+				"staticlib" =>
+					init_pebble(&arguments[2], PebbleType::StaticLib),
+				"dynamic"|
+				"dynamiclib"|
+				"sharedlib"|
+				"libshared"|
+				"shared" =>
+					init_pebble(&arguments[2], PebbleType::SharedLib),
+				"executable"|
+				"bin"|
+				"binary"|
+				"exe" =>
+					init_pebble(&arguments[2], PebbleType::Executable),
+				x =>
 				{
-					"lib"|
-					"libstatic"|
-					"staticlib" =>
-						init_pebble(&arguments[2], PebbleType::StaticLib),
-					"dynamic"|
-					"dynamiclib"|
-					"sharedlib"|
-					"libshared"|
-					"shared" =>
-						init_pebble(&arguments[2], PebbleType::SharedLib),
-					"executable"|
-					"bin"|
-					"binary"|
-					"exe" =>
-						init_pebble(&arguments[2], PebbleType::Executable),
-					x =>
-					{
-						println!("unknown pebble type '{}'", x);
-						exit(-1);
-					}
-				},
-				_ =>
-				{
-					println!("usage: pebble new <name> <type>");
+					println!("unknown pebble type '{}'", x);
 					exit(-1);
-				},
+				}
+			},
+			_ =>
+			{
+				println!("usage: pebble new <name> <type>");
+				exit(-1);
+			},
+		},
+		"scan" => match arguments.len()
+		{
+			2 => scan(),
+			_ =>
+			{
+				println!("usage: pebble scan #what else?");
+				exit(-1);
 			}
-		}
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
