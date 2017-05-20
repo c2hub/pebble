@@ -32,7 +32,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 			exit(-1);
 		}
 	};
-	println!("  {} new pebble [{}] in directory '{}'...", 
+	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("creating"),
 		Green.bold().paint(name),
 		Green.bold().paint(path_str.clone())
@@ -60,7 +60,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 			{
 				match File::create("recipe.txt")
 				{
-					Ok(mut f) => 
+					Ok(mut f) =>
 						{let _ = write!(f, "{}", EXECUTABLE_RECIPE_STUB.replace("[[name]]", name));},
 					Err(_) =>
 					{
@@ -68,7 +68,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 						exit(-1);
 					}
 				};
-				
+
 				match File::create("src/main.c2")
 				{
 					Ok(mut f) =>
@@ -162,7 +162,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 				exit(-1);
 			}
 		}
-		
+
 		Command::new("git")
 			.arg("init")
 			.arg(".")
@@ -180,13 +180,13 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 		println!(
 			"  error: directory '{0}' already exists, did you mean to use 'pebble init {0}' instead?",
 			path_str
-		); 
+		);
 		exit(-1);
 	}
 }
 
 pub fn init_pebble(path_str: &String, kind: PebbleType)
-{ 
+{
 	let cwd = match current_dir()
 	{
 		Ok(s) => s,
@@ -206,7 +206,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 			{
 				println!("  error: could not access current directory");
 				exit(-1);
-			} 
+			}
 		},
 		_ => Path::new(path_str),
 	};
@@ -227,7 +227,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 			exit(-1);
 		}
 	};
-	println!("  {} new pebble [{}] in directory '{}'...", 
+	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("initializing"),
 		Green.bold().paint(name),
 		Green.bold().paint(path_str.clone())
@@ -261,7 +261,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 							exit(-1);
 						}
 					}
-					&& match Path::new(&f.path()).extension() {Some(ex) => ex == "c2", None => {false}} 
+					&& match Path::new(&f.path()).extension() {Some(ex) => ex == "c2", None => {false}}
 					{
 						let path = f.path();
 						let filename = match path.file_name()
@@ -294,7 +294,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 				{
 					println!("  error: failed to open read file in directory");
 					exit(-1);
-				} 
+				}
 			}
 		}
 
@@ -402,14 +402,14 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 				exit(-1);
 			}
 		}
-		
+
 		Command::new("git")
 			.arg("init")
 			.arg(".")
 			.output()
 			.expect("  error: failed to init git repository");
 
-		println!("  {} initializing {} pebble '{}'", 
+		println!("  {} initializing {} pebble '{}'",
 			Yellow.bold().paint("finished"),
 			kind.to_string(),
 			Green.bold().paint(name)
@@ -420,7 +420,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 		println!(
 			"  error: 'pebble init' is for existing directories, did you mean to use 'pebble new {0}' instead?",
 			path_str
-		); 
+		);
 		exit(-1);
 	}
 }
@@ -428,12 +428,12 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 pub fn scan()
 {
 	let mut recipe = Recipe::new();
-	
+
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
 	else
 		{println!("  error: no recipe found in path"); exit(-1);}
-	
+
 	if !Path::new("pebble.toml").exists()
 	{
 		println!("  error: not a valid pebble, missing pebble.toml");
@@ -485,12 +485,12 @@ pub fn scan()
 pub fn add(filename: &String)
 {
 	let mut recipe = Recipe::new();
-	
+
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
 	else
 		{println!("  error: no recipe found in path"); exit(-1);}
-	
+
 	if !Path::new("pebble.toml").exists()
 	{
 		println!("  error: not a valid pebble, missing pebble.toml");
@@ -536,12 +536,12 @@ pub fn add(filename: &String)
 pub fn remove(filename: &String)
 {
 	let mut recipe = Recipe::new();
-	
+
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
 	else
 		{println!("  error: no recipe found in path"); exit(-1);}
-	
+
 	if !Path::new("pebble.toml").exists()
 	{
 		println!("  error: not a valid pebble, missing pebble.toml");
@@ -567,7 +567,7 @@ pub fn remove(filename: &String)
 pub fn build()
 {
 	let mut recipe = Recipe::new();
-	
+
 	if Recipe::find() != None
 	{
 		recipe.read_errors(true);
@@ -580,7 +580,7 @@ pub fn build()
 	}
 	else
 		{println!("  error: no recipe found in path"); exit(-1);}
-	
+
 	if !Path::new("pebble.toml").exists()
 	{
 		println!("  error: not a valid pebble, missing pebble.toml");
@@ -614,9 +614,9 @@ pub fn build()
 		.arg(name)
 		.output()
 		.expect("  error: failed to execute c2c");
-	
+
 	if !output.status.success()
-	{ 
+	{
 		println!("  {} during compilation:\n", Red.bold().paint("error"));
 		unsafe { print!("{}",
 			// on one hand, I feel smart for knowing how to repaint the string
@@ -689,7 +689,7 @@ pub fn run(args: Vec<String>)
 			println!("  error: invalid project path");
 			exit(-1);
 		}
-	};	
+	};
 
 	if recipe.targets[0].kind != TargetType::Executable
 	{
@@ -702,7 +702,7 @@ pub fn run(args: Vec<String>)
 	let exe_path = match current_dir()
 	{
 		Ok(cwd) => cwd.into_os_string().into_string().unwrap()
-			+ "/output/" 
+			+ "/output/"
 			+ pebble_name
 			+ "/"
 			+ pebble_name,
@@ -773,7 +773,7 @@ pub fn test(args: Vec<String>)
 			println!("  error: invalid project path");
 			exit(-1);
 		}
-	};	
+	};
 
 	if recipe.targets[0].kind == TargetType::Executable
 	{
@@ -808,5 +808,5 @@ pub fn test(args: Vec<String>)
 	Command::new(exe_path)
 		.args(args)
 		.spawn()
-		.expect("  error: failed to launch");	
+		.expect("  error: failed to launch");
 }
