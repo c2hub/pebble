@@ -128,6 +128,10 @@ fn main()
 				exit(-1);
 			}
 		},
+		"run" => match arguments.len()
+		{
+			_ => run(arguments.clone().into_iter().skip(2).collect()),
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
