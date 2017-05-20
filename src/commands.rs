@@ -2,13 +2,14 @@ use types::PebbleType;
 use util::*;
 
 use ansi_term::Colour::{Yellow, Green};
+use recipe_reader::*;
 
 use std::process::Command;
 use std::env::{set_current_dir, current_dir};
-use std::fs::{create_dir_all, create_dir, File, read_dir};
+use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
 use std::io::Write;
 use std::process::exit;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub fn new_pebble(path_str: &String, kind: PebbleType)
 {
@@ -52,7 +53,6 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 			println!("  error: failed to create source directory");
 			exit(-1);
 		}
-		//TODO
 		match kind
 		{
 			PebbleType::Executable =>
@@ -186,8 +186,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 
 //TODO
 pub fn init_pebble(path_str: &String, kind: PebbleType)
-{
-	let mut source_files = Vec::new(); 
+{ 
 	let cwd = match current_dir()
 	{
 		Ok(s) => s,
@@ -235,6 +234,7 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 	);
 	if proj_path.exists()
 	{
+		let mut files: Vec<String> = Vec::new();
 		if let Err(_) = set_current_dir(&proj_path)
 		{
 			println!("  error: failed to change directory");
@@ -262,7 +262,29 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 						}
 					}
 					&& match Path::new(&f.path()).extension() {Some(ex) => ex == "c2", None => {false}} 
-						{source_files.push(f);}
+					{
+						let path = f.path();
+						let filename = match path.file_name()
+						{
+							Some(p) => p.to_str().unwrap(),
+							None =>
+							{
+								println!("  error: failed to read path");
+								exit(-1);
+							}
+						};
+						if let Err(_) = copy(Path::new(filename), Path::new(&("src/".to_string() + filename)))
+						{
+							println!("  error: failed to copy file '{}'", filename);
+							exit(-1);
+						}
+						if let Err(_) = remove_file(Path::new(filename))
+						{
+							println!("  error: failed to move file '{}'", filename);
+							exit(-1);
+						}
+						files.push("src/".to_string() + filename);
+					}
 				},
 				Err(_) =>
 				{
@@ -272,10 +294,33 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 			}
 		}
 
+		//TODO
 		match kind
 		{
 			PebbleType::Executable =>
 			{
+				let mut recipe = Recipe::new();
+				recipe.targets.push(
+					Target
+					{
+						name: name.to_string(),
+						kind: TargetType::Executable,
+						files: files,
+						options: TargetOptions
+						{
+							deps: false,
+							refs: false,
+							nolibc: false,
+							generate_c: true,
+							generate_ir: false,
+							lib_use: Vec::new(),
+							export: Vec::new(),
+							config: Vec::new(),
+							warnings: Vec::new(),
+						}
+					}
+				);
+				recipe.write_path(&PathBuf::from("./recipe.txt"));
 			},
 			PebbleType::StaticLib =>
 			{
