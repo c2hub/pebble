@@ -266,7 +266,11 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 						let path = f.path();
 						let filename = match path.file_name()
 						{
-							Some(p) => p.to_str().unwrap(),
+							Some(p) => match p.to_str().unwrap()
+							{
+								"tests.c2" => continue,
+								x => x
+							},
 							None =>
 							{
 								println!("  error: failed to read path");
