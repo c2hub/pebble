@@ -4,13 +4,13 @@ use util::*;
 use ansi_term::Colour::{Yellow, Green, Red};
 use recipe_reader::*;
 
-use std::process::Command;
-use std::env::{set_current_dir, current_dir};
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
-use std::io::Write;
-use std::process::exit;
+use std::env::{set_current_dir, current_dir};
 use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::process::exit;
 use std::ops::Deref;
+use std::io::Write;
 
 pub fn new_pebble(path_str: &String, kind: PebbleType)
 {
