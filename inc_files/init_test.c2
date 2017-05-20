@@ -1,0 +1,25 @@
+module tests;
+import stdio as io;
+///import your modules here
+///example:
+/*
+** import mymodule as lib;
+** import another_mod local;
+** import third_mod as lib2 local;
+*/
+
+// your tests here
+public func bool eq(int32 a, int32 b)
+{
+	return a == b;
+}
+
+
+// add them to main
+public func int32 main(int32 argc, char** argv)
+{
+	int32 test_num = 0;
+	io.printf("test %d %s", ++test_num, seq(5,5) ? "passed" : "failed");
+
+	return 0;
+}

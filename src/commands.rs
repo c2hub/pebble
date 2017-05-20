@@ -294,7 +294,6 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 			}
 		}
 
-		//TODO
 		match kind
 		{
 			PebbleType::Executable =>
@@ -322,11 +321,67 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 				);
 				recipe.write_path(&PathBuf::from("./recipe.txt"));
 			},
-			PebbleType::StaticLib =>
+			t@ PebbleType::StaticLib | t@ PebbleType::SharedLib =>
 			{
-			},
-			PebbleType::SharedLib =>
-			{
+				let mut recipe = Recipe::new();
+				recipe.targets.push(
+					Target
+					{
+						name: name.to_string(),
+						kind: match t
+						{
+							PebbleType::StaticLib => TargetType::StaticLib,
+							PebbleType::SharedLib => TargetType::SharedLib,
+							_ => TargetType::Temporary, //can't occur
+						},
+						files: files.clone(),
+						options: TargetOptions
+						{
+							deps: false,
+							refs: false,
+							nolibc: false,
+							generate_c: true,
+							generate_ir: false,
+							lib_use: Vec::new(),
+							export: vec![name.to_string()],
+							config: Vec::new(),
+							warnings: Vec::new(),
+						}
+					}
+				);
+				files.push("test.c2".to_string());
+				recipe.targets.push(
+					Target
+					{
+						name: name.to_string(),
+						kind: TargetType::Executable,
+						files: files,
+						options: TargetOptions
+						{
+							deps: false,
+							refs: false,
+							nolibc: false,
+							generate_c: true,
+							generate_ir: false,
+							lib_use: Vec::new(),
+							export: Vec::new(),
+							config: Vec::new(),
+							warnings: Vec::new(),
+						}
+					}
+				);
+				recipe.write_path(&PathBuf::from("./recipe.txt"));
+
+				match File::create("tests.c2")
+				{
+					Ok(mut f) =>
+						{let _ = write!(f, "{}", INIT_TEST);}
+					Err(_) =>
+					{
+						println!("  error: failed to create tests.c2");
+						exit(-1);
+					}
+				}
 			}
 		}
 
@@ -362,4 +417,3 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 		exit(-1);
 	}
 }
-

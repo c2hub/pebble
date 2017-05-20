@@ -10,3 +10,4 @@ pub const SHAREDLIB_HELLO_WORLD: &'static str  = include_str!("../inc_files/shar
 pub const SHAREDLIB_RECIPE_STUB: &'static str  = include_str!("../inc_files/sharedlib_recipe_stub.txt");
 
 pub const LIB_TEST: &'static str = include_str!("../inc_files/lib_test.c2");
+pub const INIT_TEST: &'static str = include_str!("../inc_files/init_test.c2");
