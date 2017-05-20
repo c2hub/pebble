@@ -372,14 +372,17 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 				);
 				recipe.write_path(&PathBuf::from("./recipe.txt"));
 
-				match File::create("tests.c2")
+				if !Path::new("tests.c2").exists()
 				{
-					Ok(mut f) =>
-						{let _ = write!(f, "{}", INIT_TEST);}
-					Err(_) =>
+					match File::create("tests.c2")
 					{
-						println!("  error: failed to create tests.c2");
-						exit(-1);
+						Ok(mut f) =>
+							{let _ = write!(f, "{}", INIT_TEST);}
+						Err(_) =>
+						{
+							println!("  error: failed to create tests.c2");
+							exit(-1);
+						}
 					}
 				}
 			}
