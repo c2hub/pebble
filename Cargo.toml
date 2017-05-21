@@ -1,6 +1,6 @@
 [package]
 name = "pebble"
-version = "0.6.1"
+version = "0.6.2"
 authors = ["Lukáš Hozda <luk.hozda@gmail.com>"]
 license = "Fair"
 
