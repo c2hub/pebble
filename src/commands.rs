@@ -1,13 +1,15 @@
 use types::PebbleType;
 use util::*;
+use config::Config;
 
-use ansi_term::Colour::{Yellow, Green, Red};
+use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use recipe_reader::*;
 
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
 use std::env::{set_current_dir, current_dir};
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::process::Stdio;
 use std::process::exit;
 use std::ops::Deref;
 use std::io::Write;
@@ -586,6 +588,15 @@ pub fn build()
 		println!("  error: not a valid pebble, missing pebble.toml");
 		exit(-1);
 	}
+	let cfg = match Config::read()
+	{
+		Ok(c) => c,
+		Err(_) =>
+		{
+			println!("  error: failed to parse pebble.toml");
+			exit(-1);
+		}
+	};
 
 	let name = match recipe.path.parent().unwrap().file_stem()
 	{
@@ -605,6 +616,35 @@ pub fn build()
 		}
 	};
 
+	if let Some(ref bcfg) = cfg.build
+	{
+		if let Some(ref pre) = bcfg.pre
+		{
+			for cmd_str in pre
+			{
+				println!("  {} '{}'",
+					Yellow.bold().paint("executing"),
+					&cmd_str
+				);
+				let name = cmd_str.split_whitespace().collect::<Vec<&str>>()[0];
+				let args: Vec<&str> = cmd_str.split_whitespace().skip(1).collect();
+				let cmd = Command::new(name)
+					.args(args)
+					.stdout(Stdio::inherit())
+					.stderr(Stdio::inherit())
+					.output()
+					.expect("  error: failed to run command");
+				if !cmd.status.success()
+				{
+					println!("  {}: commmand '{}' returned non-zero exit code",
+						Red.bold().paint("warning"),
+						Blue.bold().paint(cmd_str.clone())
+					);
+				}
+			}
+		}
+	}
+
 	println!("  {} [{}]",
 		Yellow.bold().paint("compiling"),
 		Green.bold().paint(name)
@@ -614,6 +654,35 @@ pub fn build()
 		.arg(name)
 		.output()
 		.expect("  error: failed to execute c2c");
+
+	if let Some(ref bcfg) = cfg.build
+	{
+		if let Some(ref post) = bcfg.post
+		{
+			for cmd_str in post
+			{
+				println!("  {} '{}'",
+					Yellow.bold().paint("executing"),
+					&cmd_str
+				);
+				let name = cmd_str.split_whitespace().collect::<Vec<&str>>()[0];
+				let args: Vec<&str> = cmd_str.split_whitespace().skip(1).collect();
+				let cmd = Command::new(name)
+					.args(args)
+					.stdout(Stdio::inherit())
+					.stderr(Stdio::inherit())
+					.output()
+					.expect("  error: failed to run command");
+				if !cmd.status.success()
+				{
+					println!("  {}: commmand '{}' returned non-zero exit code",
+						Red.bold().paint("warning"),
+						Blue.bold().paint(cmd_str.clone())
+					);
+				}
+			}
+		}
+	}
 
 	if !output.status.success()
 	{
@@ -794,7 +863,7 @@ pub fn test(args: Vec<String>)
 		}
 	};
 
-	// restore original cwd, so that pebble test can be used from anywhere within the pebble
+	// restore original cwd, so that 'pebble test' can be used from anywhere within the pebble
 	// I want to give the choice of the test executable to be either a test suite or an example
 	// program using the library
 	if let Err(_) = set_current_dir(orig_cwd)
