@@ -23,6 +23,9 @@ fn main()
 {
 	let arguments: Vec<String> = args().collect();
 
+	if arguments.len() < 2
+		{help(&String::new());}
+
 	match arguments[1].as_ref()
 	{
 		"new" =>
@@ -67,13 +70,16 @@ fn main()
 			{
 				"lib"|
 				"libstatic"|
-				"staticlib" =>
+				"staticlib"|
+				"static"|
+				"slib" =>
 					init_pebble(&arguments[2], PebbleType::StaticLib),
 				"dynamic"|
 				"dynamiclib"|
 				"sharedlib"|
 				"libshared"|
-				"shared" =>
+				"shared"|
+				"dlib" =>
 					init_pebble(&arguments[2], PebbleType::SharedLib),
 				"executable"|
 				"bin"|
