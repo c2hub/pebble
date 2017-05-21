@@ -22,6 +22,7 @@ use std::env::args;
 fn main()
 {
 	let arguments: Vec<String> = args().collect();
+
 	match arguments[1].as_ref()
 	{
 		"new" =>
@@ -127,14 +128,10 @@ fn main()
 				exit(-1);
 			}
 		},
-		"run" => match arguments.len()
-		{
-			_ => run(arguments.clone().into_iter().skip(2).collect()),
-		},
-		"test" => match arguments.len()
-		{
-			_ => test(arguments.clone().into_iter().skip(2).collect()),
-		},
+		"run" => run(arguments.clone().into_iter().skip(2).collect()),
+		"test" => test(arguments.clone().into_iter().skip(2).collect()),
+		"install" => install(),
+		"uninstall" => uninstall(),
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
