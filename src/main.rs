@@ -134,6 +134,11 @@ fn main()
 				exit(-1);
 			}
 		},
+		"help" => match arguments.len()
+		{
+			2 => help(&String::new()),
+			_ => help(&arguments[2].to_string()),
+		},
 		"run" => run(arguments.clone().into_iter().skip(2).collect()),
 		"test" => test(arguments.clone().into_iter().skip(2).collect()),
 		"install" => install(),
