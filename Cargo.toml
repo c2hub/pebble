@@ -2,6 +2,7 @@
 name = "pebble"
 version = "0.8.4"
 authors = ["Lukáš Hozda <luk.hozda@gmail.com>"]
+description = "A program for managing C2 (c2lang.org) projects. Similar to cargo, but much smaller and dumber"
 license = "Fair"
 
 [dependencies]
