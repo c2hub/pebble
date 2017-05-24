@@ -6,8 +6,8 @@ description = "A program for managing C2 (c2lang.org) projects. Similar to cargo
 license = "Fair"
 
 [dependencies]
-serde = "*"
-serde_derive = "*"
-toml = "*"
-recipe-reader = "*"
-ansi_term = "*"
+serde = "^1.0.4"
+serde_derive = "^1.0.4"
+toml = "^0.4.1"
+recipe-reader = "^0.9.9"
+ansi_term = "^0.9.0"
