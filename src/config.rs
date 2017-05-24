@@ -61,7 +61,7 @@ impl Config
 			}
 		};
 		let mut contents = String::new();
-		if let Err(_) = me.read_to_string(&mut contents)
+		if me.read_to_string(&mut contents).is_err()
 		{
 			println!("  error: failed to read pebble.toml");
 			exit(-1);

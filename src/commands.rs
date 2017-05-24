@@ -14,7 +14,7 @@ use std::process::exit;
 use std::ops::Deref;
 use std::io::Write;
 
-pub fn new_pebble(path_str: &String, kind: PebbleType)
+pub fn new_pebble(path_str: &str, kind: PebbleType)
 {
 	let proj_path = Path::new(path_str);
 	let name = match proj_path.file_stem()
@@ -37,21 +37,21 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("creating"),
 		Green.bold().paint(name),
-		Green.bold().paint(path_str.clone())
+		Green.bold().paint(path_str)
 	);
 	if !proj_path.exists()
 	{
-		if let Err(_) = create_dir_all(&proj_path)
+		if create_dir_all(&proj_path).is_err()
 		{
 		    println!("  error: failed to create pebble's directory");
 		    exit(-1);
 		}
-		if let Err(_) = set_current_dir(&proj_path)
+		if set_current_dir(&proj_path).is_err()
 		{
 			println!("  error: failed to change directory");
 			exit(-1);
 		}
-		if let Err(_) = create_dir(Path::new("src"))
+		if create_dir(Path::new("src")).is_err()
 		{
 			println!("  error: failed to create source directory");
 			exit(-1);
@@ -187,7 +187,7 @@ pub fn new_pebble(path_str: &String, kind: PebbleType)
 	}
 }
 
-pub fn init_pebble(path_str: &String, kind: PebbleType)
+pub fn init_pebble(path_str: &str, kind: PebbleType)
 {
 	let cwd = match current_dir()
 	{
@@ -232,17 +232,17 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("initializing"),
 		Green.bold().paint(name),
-		Green.bold().paint(path_str.clone())
+		Green.bold().paint(path_str)
 	);
 	if proj_path.exists()
 	{
 		let mut files: Vec<String> = Vec::new();
-		if let Err(_) = set_current_dir(&proj_path)
+		if set_current_dir(&proj_path).is_err()
 		{
 			println!("  error: failed to change directory");
 			exit(-1);
 		}
-		if let Err(_) = create_dir(Path::new("src"))
+		if create_dir(Path::new("src")).is_err()
 		{
 			println!("  error: failed to create source directory");
 			exit(-1);
@@ -279,12 +279,12 @@ pub fn init_pebble(path_str: &String, kind: PebbleType)
 								exit(-1);
 							}
 						};
-						if let Err(_) = copy(Path::new(filename), Path::new(&("src/".to_string() + filename)))
+						if copy(Path::new(filename), Path::new(&("src/".to_string() + filename))).is_err()
 						{
 							println!("  error: failed to copy file '{}'", filename);
 							exit(-1);
 						}
-						if let Err(_) = remove_file(Path::new(filename))
+						if remove_file(Path::new(filename)).is_err()
 						{
 							println!("  error: failed to move file '{}'", filename);
 							exit(-1);
@@ -484,7 +484,7 @@ pub fn scan()
 	recipe.write();
 }
 
-pub fn add(filename: &String)
+pub fn add(filename: &str)
 {
 	let mut recipe = Recipe::new();
 
@@ -503,7 +503,7 @@ pub fn add(filename: &String)
 	{
 		for mut t in &mut recipe.targets
 		{
-			t.files.push(filename.clone());
+			t.files.push(filename.to_string());
 
 			println!("  {} {} to [{}]",
 				Yellow.bold().paint("added"),
@@ -535,7 +535,7 @@ pub fn add(filename: &String)
 	recipe.write();
 }
 
-pub fn remove(filename: &String)
+pub fn remove(filename: &str)
 {
 	let mut recipe = Recipe::new();
 
@@ -551,10 +551,10 @@ pub fn remove(filename: &String)
 	}
 	for mut t in &mut recipe.targets
 	{
-		if t.files.contains(filename)
+		if t.files.contains(&filename.to_string())
 		|| t.files.contains(&("src/".to_string() + filename))
 		{
-			t.files.remove_item(&filename);
+			t.files.remove_item(&filename.to_string());
 			t.files.remove_item(&("src/".to_string() + filename));
 			println!("  {} {} from [{}]",
 				Yellow.bold().paint("removed"),
@@ -698,15 +698,15 @@ pub fn build()
 					if current.contains("error")
 					|| current.contains(".c2:")
 					{
-						return acc + &Red.bold().paint(current).to_string() + "\n";
+						acc + &Red.bold().paint(current).to_string() + "\n"
 					}
-					else if current.contains("^")
+					else if current.contains('^')
 					{
-						return acc + &Green.bold().paint(current).to_string() + "\n";
+						acc + &Green.bold().paint(current).to_string() + "\n"
 					}
 					else
 					{
-					   	return acc + current + "\n";
+					   	acc + current + "\n"
 					}
 				}
 			)
@@ -783,7 +783,7 @@ pub fn run(args: Vec<String>)
 	};
 
 	// restore original cwd, so that pebble run can be used from anywhere within the pebble
-	if let Err(_) = set_current_dir(orig_cwd)
+	if set_current_dir(orig_cwd).is_err()
 	{
 		println!("  error: failed to change current directory");
 		exit(-1);
@@ -792,7 +792,7 @@ pub fn run(args: Vec<String>)
 	println!("  {} '{} {}'",
 		Yellow.bold().paint("running"),
 		&exe_path,
-		args.iter().fold(String::new(), |acc, ref curr| acc + " " + curr.as_ref() )
+		args.iter().fold(String::new(), |acc, curr| acc + " " + curr.as_ref() )
 	);
 
 	Command::new(exe_path)
@@ -866,7 +866,7 @@ pub fn test(args: Vec<String>)
 	// restore original cwd, so that 'pebble test' can be used from anywhere within the pebble
 	// I want to give the choice of the test executable to be either a test suite or an example
 	// program using the library
-	if let Err(_) = set_current_dir(orig_cwd)
+	if set_current_dir(orig_cwd).is_err()
 	{
 		println!("  error: failed to change current directory");
 		exit(-1);
@@ -1070,7 +1070,7 @@ pub fn uninstall()
 	}
 }
 
-pub fn help(cmd: &String)
+pub fn help(cmd: &str)
 {
 	fn general()
 	{
@@ -1209,10 +1209,8 @@ pub fn help(cmd: &String)
 				\n	version\
 				 ");
 	}
-
 	match cmd.as_ref()
 	{
-		"general" => general(),
 		"new" => new(),
 		"init" => init(),
 		"build" => build(),
