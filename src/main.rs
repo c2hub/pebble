@@ -9,6 +9,7 @@ extern crate toml;
 extern crate serde_derive;
 
 mod commands;
+mod packets;
 mod config;
 mod types;
 mod util;
