@@ -2,6 +2,7 @@
 
 extern crate recipe_reader;
 extern crate ansi_term;
+extern crate hyper;
 extern crate serde;
 extern crate toml;
 
@@ -144,6 +145,7 @@ fn main()
 		"test" => test(arguments.clone().into_iter().skip(2).collect()),
 		"install" => install(),
 		"uninstall" => uninstall(),
+		"update" => update(),
 		x =>
 		{
 			println!("unknown operation: '{}'", x);

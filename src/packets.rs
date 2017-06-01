@@ -7,7 +7,6 @@ pub struct Packet
 	pub data: Option<String>
 }
 
-
 #[derive(Clone, Serialize, Deserialize)]
 pub enum PacketType
 {

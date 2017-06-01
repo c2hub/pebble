@@ -3,6 +3,7 @@ use util::*;
 use config::Config;
 
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
+use hyper::client::Client;
 use recipe_reader::*;
 
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
@@ -13,6 +14,7 @@ use std::process::Stdio;
 use std::process::exit;
 use std::ops::Deref;
 use std::io::Write;
+use std::io::Read;
 
 pub fn new_pebble(path_str: &str, kind: PebbleType)
 {
@@ -171,7 +173,7 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 			.output()
 			.expect("  error: failed to init git repository");
 
-		println!("  {} creating {} pebble '{}'", 
+		println!("  {} creating {} pebble '{}'",
 			Yellow.bold().paint("finished"),
 			kind.to_string(),
 			Green.bold().paint(name)
@@ -971,7 +973,7 @@ pub fn install()
 	else
 	{
 		println!("  error: can't install due to missing build section");
-		exit(-1);  
+		exit(-1);
 	}
 }
 
@@ -1066,7 +1068,7 @@ pub fn uninstall()
 	else
 	{
 		println!("  error: can't uninstall due to missing build section");
-		exit(-1);  
+		exit(-1);
 	}
 }
 
@@ -1223,4 +1225,24 @@ pub fn help(cmd: &str)
 		_ => general(),
 	}
 	exit(0);
+}
+
+#[allow(unused_variables)]
+pub fn update()
+{
+	println!("  {} http://magnusi.tech/static/pebbles/ for pebbles",
+		Yellow.bold().paint("scanning")
+	);
+
+	let mut index = match Client::new().get("http://localhost/static/index").send()
+	{
+		Ok(res) => res,
+		Err(_) =>
+		{
+			println!("  error: failed to acquire pebble index, are you connected to the internet?");
+			exit(-1);
+		}
+	};
+
+	println!("{}", { let mut s = String::new(); index.read_to_string(&mut s); s})
 }
