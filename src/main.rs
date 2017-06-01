@@ -1,6 +1,7 @@
 #![feature(vec_remove_item)]
 
 extern crate recipe_reader;
+extern crate serde_cbor;
 extern crate ansi_term;
 extern crate hyper;
 extern crate serde;

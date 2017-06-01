@@ -1227,7 +1227,6 @@ pub fn help(cmd: &str)
 	exit(0);
 }
 
-#[allow(unused_variables)]
 pub fn update()
 {
 	println!("  {} http://magnusi.tech/static/pebbles/ for pebbles",
@@ -1244,5 +1243,5 @@ pub fn update()
 		}
 	};
 
-	println!("{}", { let mut s = String::new(); index.read_to_string(&mut s); s})
+	println!("{}", { let mut s = String::new(); let _ = index.read_to_string(&mut s); s})
 }
