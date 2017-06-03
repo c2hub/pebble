@@ -1,10 +1,12 @@
+use packets::{Packet, PacketType};
 use types::PebbleType;
-use util::*;
 use config::Config;
+use util::*;
 
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use hyper::client::Client;
 use recipe_reader::*;
+use sha1::Sha1;
 
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
 use std::env::{set_current_dir, current_dir};
@@ -1244,4 +1246,68 @@ pub fn update()
 	};
 
 	println!("{}", { let mut s = String::new(); let _ = index.read_to_string(&mut s); s})
+}
+
+
+pub fn find(name: &str)
+{
+	println!("  {} pebble [{}]",
+		Yellow.bold().paint("find"),
+		Green.bold().paint(name)
+	);
+
+	let res = Packet::find(name, "*").send();
+
+	match res.ptype
+	{
+		PacketType::Error =>
+		{
+			println!("  error occured: {}", res.name.unwrap());
+			exit(-1);
+		},
+		PacketType::Find =>
+		{
+			let data = res.data.unwrap();
+			if data != "none"
+			{
+				println!("  {} [{}] version {}",
+					Yellow.bold().paint("found"),
+					Green.bold().paint(name),
+					data
+				);
+			}
+			else
+			{
+				println!("  {}",
+					Red.bold().paint("could not be found")
+				);
+			}
+		},
+		_ => unreachable!(),
+	}
+}
+
+pub fn register(name: &str, passwd: &str)
+{
+	let mut hash = Sha1::new();
+	let bytes: Vec<u8> = passwd.bytes().collect();
+	hash.update(&bytes);
+	let res = Packet::register(name, &hash.digest().to_string())
+		.send();
+
+	match res.ptype
+	{
+		PacketType::Error =>
+		{
+			println!("  error occured: {}", res.name.unwrap());
+			exit(-1);
+		},
+		PacketType::Register =>
+		{
+			println!("  {}",
+				Yellow.bold().paint("registration successful")
+			);
+		},
+		_ => {},
+	}
 }

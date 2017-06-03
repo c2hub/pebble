@@ -6,6 +6,8 @@ extern crate ansi_term;
 extern crate hyper;
 extern crate serde;
 extern crate toml;
+extern crate sha1;
+extern crate zip;
 
 #[macro_use]
 extern crate serde_derive;
@@ -21,6 +23,8 @@ use types::*;
 
 use std::process::exit;
 use std::env::args;
+
+use ansi_term::Colour::{Yellow, Green};
 
 fn main()
 {
@@ -147,6 +151,16 @@ fn main()
 		"install" => install(),
 		"uninstall" => uninstall(),
 		"update" => update(),
+		"find" => match arguments.len()
+		{
+			3 => find(&arguments[2].to_string()),
+			_ => help(&String::new()),
+		},
+		"register" => match arguments.len()
+		{
+			4 => register(&arguments[2].to_string(), &arguments[3].to_string()),
+			_ => help(&String::new())
+		},
 		x =>
 		{
 			println!("unknown operation: '{}'", x);

@@ -192,7 +192,7 @@ impl Packet
 			let res_size = match sock.recv(&mut res_buf)
 			{
 				Ok(s) => s,
-				Err(_) => continue
+				Err(_) => continue,
 			};
 			let res_buf = &mut res_buf[..res_size];
 
