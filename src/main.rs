@@ -24,7 +24,6 @@ use types::*;
 use std::process::exit;
 use std::env::args;
 
-use ansi_term::Colour::{Yellow, Green};
 
 fn main()
 {
@@ -159,6 +158,11 @@ fn main()
 		"register" => match arguments.len()
 		{
 			4 => register(&arguments[2].to_string(), &arguments[3].to_string()),
+			_ => help(&String::new())
+		},
+		"login" => match arguments.len()
+		{
+			4 => login(&arguments[2].to_string(), &arguments[3].to_string()),
 			_ => help(&String::new())
 		},
 		x =>

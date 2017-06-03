@@ -18,3 +18,11 @@ impl ToString for PebbleType
 		}
 	}
 }
+
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct User
+{
+	pub name: String,
+	pub hash: String,
+}
