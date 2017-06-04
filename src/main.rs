@@ -28,6 +28,7 @@ mod build;
 mod find;
 mod help;
 mod util;
+mod test;
 
 mod package;
 
@@ -43,6 +44,7 @@ use login::*;
 use types::*;
 use find::*;
 use help::*;
+use test::*;
 
 use std::process::exit;
 use std::env::args;
