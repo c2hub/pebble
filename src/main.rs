@@ -13,6 +13,8 @@ extern crate zip;
 #[macro_use]
 extern crate serde_derive;
 
+
+mod uninstall;
 mod commands;
 mod register;
 mod packets;
@@ -28,6 +30,7 @@ mod util;
 
 mod package;
 
+use uninstall::*;
 use commands::*;
 use register::*;
 use package::*;
