@@ -3,6 +3,7 @@
 extern crate recipe_reader;
 extern crate serde_cbor;
 extern crate ansi_term;
+extern crate walkdir;
 extern crate hyper;
 extern crate serde;
 extern crate toml;
@@ -165,6 +166,7 @@ fn main()
 			4 => login(&arguments[2].to_string(), &arguments[3].to_string()),
 			_ => help(&String::new())
 		},
+		"package" => { let _ = package(); }
 		x =>
 		{
 			println!("unknown operation: '{}'", x);

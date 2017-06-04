@@ -17,7 +17,7 @@ pub struct PackageCfg
 {
 	pub name: String,
 	pub version: String,
-	pub source_dir: Option<String>,
+	pub source_dir: Option<String>,	//TODO
 	pub license: Option<String>,
 	pub dependencies: Option<Vec<Dependency>>,
 }
