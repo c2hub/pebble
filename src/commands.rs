@@ -7,7 +7,6 @@ use build::build;
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use hyper::client::Client;
 use recipe_reader::*;
-use sha1::Sha1;
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
 use std::env::{set_current_dir, current_dir};
 use std::path::{Path, PathBuf};
@@ -1135,34 +1134,3 @@ pub fn find(name: &str)
 		_ => unreachable!(),
 	}
 }
-
-pub fn register(name: &str, passwd: &str)
-{
-	println!("  {} user {}",
-		Yellow.bold().paint("registering"),
-		Green.bold().paint(name)
-	);
-
-	let mut hash = Sha1::new();
-	let bytes: Vec<u8> = passwd.bytes().collect();
-	hash.update(&bytes);
-	let res = Packet::register(name, &hash.digest().to_string())
-		.send();
-
-	match res.ptype
-	{
-		PacketType::Error =>
-		{
-			println!("  error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
-		PacketType::Register =>
-		{
-			println!("  {}",
-				Yellow.bold().paint("registration successful")
-			);
-		},
-		_ => {},
-	}
-}
-

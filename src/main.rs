@@ -14,6 +14,7 @@ extern crate zip;
 extern crate serde_derive;
 
 mod commands;
+mod register;
 mod packets;
 mod config;
 mod upload;
@@ -25,6 +26,7 @@ mod util;
 mod package;
 
 use commands::*;
+use register::*;
 use package::*;
 use upload::*;
 use build::*;
