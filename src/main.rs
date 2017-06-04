@@ -29,6 +29,7 @@ mod find;
 mod help;
 mod util;
 mod test;
+mod run;
 
 mod package;
 
@@ -45,6 +46,7 @@ use types::*;
 use find::*;
 use help::*;
 use test::*;
+use run::*;
 
 use std::process::exit;
 use std::env::args;
