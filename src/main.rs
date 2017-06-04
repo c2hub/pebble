@@ -16,10 +16,17 @@ extern crate serde_derive;
 mod commands;
 mod packets;
 mod config;
+mod upload;
 mod types;
+mod build;
 mod util;
 
+mod package;
+
 use commands::*;
+use package::*;
+use upload::*;
+use build::*;
 use types::*;
 
 use std::process::exit;
@@ -167,6 +174,7 @@ fn main()
 			_ => help(&String::new())
 		},
 		"package" => { let _ = package(); }
+		"upload" => upload(),
 		x =>
 		{
 			println!("unknown operation: '{}'", x);
