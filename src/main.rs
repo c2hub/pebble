@@ -1,5 +1,8 @@
 #![feature(vec_remove_item)]
 
+#[macro_use]
+extern crate serde_derive;
+
 extern crate version_compare;
 extern crate recipe_reader;
 extern crate serde_cbor;
@@ -10,10 +13,6 @@ extern crate serde;
 extern crate toml;
 extern crate sha1;
 extern crate zip;
-
-#[macro_use]
-extern crate serde_derive;
-
 
 mod uninstall;
 mod register;
