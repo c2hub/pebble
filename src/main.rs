@@ -21,6 +21,7 @@ mod upload;
 mod login;
 mod types;
 mod build;
+mod find;
 mod util;
 
 mod package;
@@ -32,6 +33,7 @@ use upload::*;
 use build::*;
 use login::*;
 use types::*;
+use find::*;
 
 use std::process::exit;
 use std::env::args;
