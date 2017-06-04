@@ -1,5 +1,6 @@
 #![feature(vec_remove_item)]
 
+extern crate version_compare;
 extern crate recipe_reader;
 extern crate serde_cbor;
 extern crate ansi_term;
@@ -58,7 +59,6 @@ use new::*;
 
 use std::process::exit;
 use std::env::args;
-
 
 fn main()
 {
