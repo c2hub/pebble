@@ -17,6 +17,7 @@ mod commands;
 mod packets;
 mod config;
 mod upload;
+mod login;
 mod types;
 mod build;
 mod util;
@@ -27,6 +28,7 @@ use commands::*;
 use package::*;
 use upload::*;
 use build::*;
+use login::*;
 use types::*;
 
 use std::process::exit;

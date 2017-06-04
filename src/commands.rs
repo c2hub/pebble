@@ -1,5 +1,5 @@
 use packets::{Packet, PacketType};
-use types::{PebbleType, User};
+use types::PebbleType;
 use config::Config;
 use util::*;
 use build::build;
@@ -8,10 +8,8 @@ use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use hyper::client::Client;
 use recipe_reader::*;
 use sha1::Sha1;
-use toml;
-
 use std::fs::{create_dir_all, create_dir, File, read_dir, copy, remove_file};
-use std::env::{set_current_dir, current_dir, temp_dir};
+use std::env::{set_current_dir, current_dir};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::process::Stdio;
@@ -1168,54 +1166,3 @@ pub fn register(name: &str, passwd: &str)
 	}
 }
 
-pub fn login(name: &str, passwd: &str)
-{
-	println!("  {}",
-		Yellow.bold().paint("logging in")
-	);
-
-	let mut hash = Sha1::new();
-	let bytes: Vec<u8> = passwd.bytes().collect();
-	hash.update(&bytes);
-	let hash = hash.digest().to_string();
-	let res = Packet::login(name, &hash)
-		.send();
-
-	match res.ptype
-	{
-		PacketType::Error =>
-		{
-			println!("  error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
-		PacketType::Login =>
-		{
-			let mut f = match File::create(
-				&{let mut temp = temp_dir(); temp.push("pebble_usr"); temp}
-			)
-			{
-				Ok(f) => f,
-				Err(_) =>
-				{
-					println!("  error: failed to create login file");
-					exit(-1);
-				}
-			};
-
-			let _ = write!(f, "{}",
-				toml::to_string(&User
-					{
-						name: name.to_string(),
-						hash: hash,
-					}
-				).unwrap()
-			);
-
-			println!("  {} as {}",
-				Yellow.bold().paint("logged in"),
-				Green.bold().paint(name)
-			);
-		},
-		_ => {},
-	}
-}
