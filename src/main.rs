@@ -30,6 +30,7 @@ mod find;
 mod help;
 mod util;
 mod test;
+mod scan;
 mod run;
 mod add;
 
@@ -49,6 +50,7 @@ use types::*;
 use find::*;
 use help::*;
 use test::*;
+use scan::*;
 use run::*;
 use add::*;
 
