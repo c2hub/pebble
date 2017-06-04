@@ -1360,6 +1360,11 @@ pub fn login(name: &str, passwd: &str)
 					}
 				).unwrap()
 			);
+
+			println!("  {} as {}",
+				Yellow.bold().paint("logged in"),
+				Green.bold().paint(name)
+			);
 		},
 		_ => {},
 	}
