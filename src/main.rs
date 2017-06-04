@@ -15,7 +15,6 @@ extern crate serde_derive;
 
 
 mod uninstall;
-mod commands;
 mod register;
 mod packets;
 mod install;
@@ -31,13 +30,14 @@ mod help;
 mod util;
 mod test;
 mod scan;
+mod init;
 mod run;
 mod add;
+mod new;
 
 mod package;
 
 use uninstall::*;
-use commands::*;
 use register::*;
 use package::*;
 use install::*;
@@ -51,8 +51,10 @@ use find::*;
 use help::*;
 use test::*;
 use scan::*;
+use init::*;
 use run::*;
 use add::*;
+use new::*;
 
 use std::process::exit;
 use std::env::args;
