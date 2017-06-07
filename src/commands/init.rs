@@ -8,7 +8,6 @@ use std::fs::{create_dir, File, read_dir, copy, remove_file};
 use std::env::{set_current_dir, current_dir};
 use std::path::{Path, PathBuf};
 use std::process::Command;
-use std::process::exit;
 use std::io::Write;
 
 pub fn init_pebble(path_str: &str, kind: PebbleType)

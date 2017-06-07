@@ -12,7 +12,6 @@ use ansi_term::Colour::{Green, Yellow, Red};
 use std::fs::File;
 use std::io::Read;
 use std::path::Path;
-use std::process::exit;
 use std::env::temp_dir;
 use std::env::set_current_dir;
 

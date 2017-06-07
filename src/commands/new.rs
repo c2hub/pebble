@@ -7,7 +7,6 @@ use std::fs::{create_dir_all, create_dir, File};
 use std::env::set_current_dir;
 use std::path::Path;
 use std::process::Command;
-use std::process::exit;
 use std::io::Write;
 
 pub fn new_pebble(path_str: &str, kind: PebbleType)

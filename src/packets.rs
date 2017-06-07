@@ -2,7 +2,6 @@
 use serde_cbor;
 
 use std::net::UdpSocket;
-use std::process::exit;
 
 use errors::*;
 

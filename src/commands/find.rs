@@ -2,7 +2,6 @@ use errors::*;
 use packets::{Packet, PacketType};
 
 use ansi_term::Colour::{Yellow, Green, Red};
-use std::process::exit;
 
 pub fn find(name: &str)
 {

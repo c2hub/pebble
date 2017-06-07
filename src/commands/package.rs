@@ -7,10 +7,9 @@ use recipe_reader::*;
 use walkdir;
 use zip;
 
-use std::fs::{File, metadata};
 use std::env::{set_current_dir};
+use std::fs::{File, metadata};
 use std::path::{Path};
-use std::process::exit;
 use std::io::Write;
 use std::io::Read;
 

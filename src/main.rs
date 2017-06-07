@@ -25,7 +25,6 @@ use types::*;
 use errors::*;
 use commands::*;
 
-use std::process::exit;
 use std::env::args;
 
 fn main()

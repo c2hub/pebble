@@ -3,7 +3,6 @@ use recipe_reader::*;
 use std::fs::read_dir;
 use std::env::set_current_dir;
 use std::path::Path;
-use std::process::exit;
 use std::ops::Deref;
 
 use errors::*;

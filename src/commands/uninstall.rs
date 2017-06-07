@@ -7,7 +7,6 @@ use std::env::set_current_dir;
 use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
-use std::process::exit;
 
 pub fn uninstall()
 {

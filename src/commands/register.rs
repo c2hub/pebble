@@ -3,7 +3,6 @@ use errors::*;
 
 use ansi_term::Colour::{Yellow, Green};
 use sha1::Sha1;
-use std::process::exit;
 
 pub fn register(name: &str, passwd: &str)
 {

@@ -5,7 +5,6 @@ use ansi_term::Colour::{Yellow, Green};
 use recipe_reader::*;
 use std::env::{set_current_dir, current_dir};
 use std::process::Command;
-use std::process::exit;
 
 pub fn test(args: Vec<String>)
 {

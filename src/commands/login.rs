@@ -8,7 +8,6 @@ use toml;
 
 use std::fs::File;
 use std::env::temp_dir;
-use std::process::exit;
 use std::io::Write;
 
 pub fn login(name: &str, passwd: &str)
