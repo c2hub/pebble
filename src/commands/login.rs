@@ -6,9 +6,9 @@ use ansi_term::Colour::{Yellow, Green};
 use sha1::Sha1;
 use toml;
 
-use std::fs::File;
 use std::env::temp_dir;
 use std::io::Write;
+use std::fs::File;
 
 pub fn login(name: &str, passwd: &str)
 {

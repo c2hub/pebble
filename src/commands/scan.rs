@@ -1,7 +1,7 @@
 use ansi_term::Colour::{Yellow, Red};
-use recipe_reader::*;
-use std::fs::read_dir;
 use std::env::set_current_dir;
+use std::fs::read_dir;
+use recipe_reader::*;
 use std::path::Path;
 use std::ops::Deref;
 

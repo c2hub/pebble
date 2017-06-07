@@ -2,11 +2,11 @@ use config::Config;
 use errors::*;
 
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
-use recipe_reader::*;
 use std::env::set_current_dir;
-use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
+use recipe_reader::*;
+use std::path::Path;
 
 pub fn uninstall()
 {

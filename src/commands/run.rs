@@ -1,10 +1,10 @@
 use commands::build;
 use errors::*;
 
-use ansi_term::Colour::{Yellow, Green};
-use recipe_reader::*;
 use std::env::{set_current_dir, current_dir};
+use ansi_term::Colour::{Yellow, Green};
 use std::process::Command;
+use recipe_reader::*;
 
 pub fn run(args: Vec<String>)
 {

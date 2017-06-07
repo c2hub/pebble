@@ -21,9 +21,9 @@ mod errors;
 mod types;
 mod util;
 
-use types::*;
-use errors::*;
 use commands::*;
+use errors::*;
+use types::*;
 
 use std::env::args;
 

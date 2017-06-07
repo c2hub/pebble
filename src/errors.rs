@@ -1,7 +1,7 @@
 use ansi_term::Colour::Red;
 
-use std::fmt::Display;
 use std::process::exit;
+use std::fmt::Display;
 
 pub fn fail(msg: &str, code: i32) -> !
 {

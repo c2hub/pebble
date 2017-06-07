@@ -1,5 +1,5 @@
-use errors::*;
 use packets::{Packet, PacketType};
+use errors::*;
 
 use ansi_term::Colour::{Yellow, Green, Red};
 

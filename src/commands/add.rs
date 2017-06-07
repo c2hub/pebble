@@ -1,6 +1,6 @@
 use ansi_term::Colour::{Yellow, Green};
-use recipe_reader::*;
 use std::env::set_current_dir;
+use recipe_reader::*;
 use std::path::Path;
 
 use errors::*;

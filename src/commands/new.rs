@@ -2,11 +2,11 @@ use types::PebbleType;
 use errors::*;
 use util::*;
 
-use ansi_term::Colour::{Yellow, Green};
 use std::fs::{create_dir_all, create_dir, File};
+use ansi_term::Colour::{Yellow, Green};
 use std::env::set_current_dir;
-use std::path::Path;
 use std::process::Command;
+use std::path::Path;
 use std::io::Write;
 
 pub fn new_pebble(path_str: &str, kind: PebbleType)

@@ -4,16 +4,16 @@ use config::Config;
 use types::User;
 use errors::*;
 
-use toml;
-use recipe_reader::*;
-use version_compare::Version;
 use ansi_term::Colour::{Green, Yellow, Red};
+use version_compare::Version;
+use recipe_reader::*;
+use toml;
 
+use std::env::set_current_dir;
+use std::env::temp_dir;
+use std::path::Path;
 use std::fs::File;
 use std::io::Read;
-use std::path::Path;
-use std::env::temp_dir;
-use std::env::set_current_dir;
 
 pub fn upload()
 {
