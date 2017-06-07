@@ -1,4 +1,5 @@
 use types::PebbleType;
+use errors::*;
 use util::*;
 
 use ansi_term::Colour::{Yellow, Green};
@@ -15,11 +16,7 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 	let cwd = match current_dir()
 	{
 		Ok(s) => s,
-		Err(_) =>
-		{
-			println!("  error: could not access current directory");
-			exit(-1);
-		}
+		Err(_) => fail("could not access current directory", 19)
 	};
 	let proj_path = match path_str.as_ref()
 	{
@@ -27,11 +24,7 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 		".." => match cwd.parent()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not access current directory");
-				exit(-1);
-			}
+			None => fail("could not access parent directory", 20)
 		},
 		_ => Path::new(path_str),
 	};
@@ -40,17 +33,9 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 		Some(n) => match n.to_str()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not read name string");
-				exit(-1);
-			}
+			None => fail("could not read name string", 21)
 		},
-		None =>
-		{
-			println!("  error: invalid project path");
-			exit(-1);
-		}
+		None => fail("invalid project path", 22)
 	};
 	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("initializing"),
@@ -61,17 +46,11 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 	{
 		let mut files: Vec<String> = Vec::new();
 		if set_current_dir(&proj_path).is_err()
-		{
-			println!("  error: failed to change directory");
-			exit(-1);
-		}
+			{fail("failed to change directory", 23);}
 		if create_dir(Path::new("src")).is_err()
-		{
-			println!("  error: failed to create source directory");
-			exit(-1);
-		}
+			{fail("failed to create source directory", 24)}
 		for f in match read_dir(Path::new("."))
-			{ Ok(r) => r, _ => {println!(" error: failed to open current directory"); exit(-1);} }
+			{ Ok(r) => r, _ => fail("failed to open current directory", 25)}
 		{
 			match f
 			{
@@ -80,11 +59,7 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 					if match f.metadata()
 					{
 						Ok(m) => m.is_file(),
-						Err(_) =>
-						{
-							println!("  error: failed to read file metadata");
-							exit(-1);
-						}
+						Err(_) => fail("failed to read file metadata", 26)
 					}
 					&& match Path::new(&f.path()).extension() {Some(ex) => ex == "c2", None => {false}}
 					{
@@ -96,30 +71,16 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 								"tests.c2" => continue,
 								x => x
 							},
-							None =>
-							{
-								println!("  error: failed to read path");
-								exit(-1);
-							}
+							None => fail("failed to read path", 27)
 						};
 						if copy(Path::new(filename), Path::new(&("src/".to_string() + filename))).is_err()
-						{
-							println!("  error: failed to copy file '{}'", filename);
-							exit(-1);
-						}
+							{fail1("failed to copy file '{}'", filename, 28);}
 						if remove_file(Path::new(filename)).is_err()
-						{
-							println!("  error: failed to move file '{}'", filename);
-							exit(-1);
-						}
+							{fail1("failed to move file '{}'", filename, 29);}
 						files.push("src/".to_string() + filename);
 					}
 				},
-				Err(_) =>
-				{
-					println!("  error: failed to open read file in directory");
-					exit(-1);
-				}
+				Err(_) => fail("failed to open read file in directory", 30)
 			}
 		}
 
@@ -207,11 +168,7 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 					{
 						Ok(mut f) =>
 							{let _ = write!(f, "{}", INIT_TEST);}
-						Err(_) =>
-						{
-							println!("  error: failed to create tests.c2");
-							exit(-1);
-						}
+						Err(_) => fail("failed to create tests.c2", 31)
 					}
 				}
 			}
@@ -221,11 +178,7 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 		{
 			Ok(mut f) =>
 				{let _ = write!(f, "{}", PEBBLE_TOML.replace("[[name]]", name));},
-			Err(_) =>
-			{
-				println!("  error: failed to create pebble.toml");
-				exit(-1);
-			}
+			Err(_) => fail("failed to create pebble.toml", 32)
 		}
 
 		Command::new("git")
@@ -241,11 +194,5 @@ pub fn init_pebble(path_str: &str, kind: PebbleType)
 		);
 	}
 	else
-	{
-		println!(
-			"  error: 'pebble init' is for existing directories, did you mean to use 'pebble new {0}' instead?",
-			path_str
-		);
-		exit(-1);
-	}
+		{fail1("'pebble init' is for existing directories, did you mean to use 'pebble new {}' instead", path_str, 33);}
 }

@@ -4,6 +4,8 @@ use std::env::set_current_dir;
 use std::path::Path;
 use std::process::exit;
 
+use errors::*;
+
 pub fn remove(filename: &str)
 {
 	let mut recipe = Recipe::new();
@@ -11,13 +13,10 @@ pub fn remove(filename: &str)
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
 	else
-		{println!("  error: no recipe found in path"); exit(-1);}
+		{fail("no recipe found in path", 73);}
 
 	if !Path::new("pebble.toml").exists()
-	{
-		println!("  error: not a valid pebble, missing pebble.toml");
-		exit(-1);
-	}
+		{fail("not a valid pebble, missing pebble.toml", 74);}
 	for mut t in &mut recipe.targets
 	{
 		if t.files.contains(&filename.to_string())

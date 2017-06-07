@@ -8,6 +8,8 @@ use std::process::Command;
 use std::process::Stdio;
 use std::process::exit;
 
+use errors::*;
+
 pub fn build()
 {
 	let mut recipe = Recipe::new();
@@ -16,28 +18,19 @@ pub fn build()
 	{
 		recipe.read_errors(true);
 		if !recipe.ok
-		{
-			println!("  error: failed to read recipe, exiting");
-			exit(-1);
-		}
+			{fail("failed to read recipe, exiting", 12);}
 		let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));
 	}
 	else
-		{println!("  error: no recipe found in path"); exit(-1);}
+		{fail("no recipe found in path", 13);}
 
 	if !Path::new("pebble.toml").exists()
-	{
-		println!("  error: not a valid pebble, missing pebble.toml");
-		exit(-1);
-	}
+		{fail("not a valid pebble, missing pebble.toml", 14);}
+
 	let cfg = match Config::read()
 	{
 		Ok(c) => c,
-		Err(_) =>
-		{
-			println!("  error: failed to parse pebble.toml");
-			exit(-1);
-		}
+		Err(_) => fail("failed to parse pebble.toml", 15)
 	};
 
 	let name = match recipe.path.parent().unwrap().file_stem()
@@ -45,17 +38,9 @@ pub fn build()
 		Some(n) => match n.to_str()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not read name string");
-				exit(-1);
-			}
+			None => fail("could not read name string", 16)
 		},
-		None =>
-		{
-			println!("  error: invalid project path");
-			exit(-1);
-		}
+		None => fail("invalid project path", 17)
 	};
 
 	if let Some(ref bcfg) = cfg.build

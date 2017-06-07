@@ -4,6 +4,8 @@ use serde_cbor;
 use std::net::UdpSocket;
 use std::process::exit;
 
+use errors::*;
+
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Packet
 {
@@ -72,7 +74,7 @@ impl Packet
 
 	pub fn data2(mut self, data: String) -> Packet
 	{
-		self.data = Some(data);
+		self.data2 = Some(data);
 		self
 	}
 
@@ -128,10 +130,10 @@ impl Packet
 	{
 		Packet::new()
 			.ptype(PacketType::Upload)
-			.name(uname.to_owned())
+			.name(name.to_owned())
 			.raw_data(file)
 			.data(version.to_owned())
-			.data2(name.to_owned())
+			.data2(uname.to_owned())
 			.extra(hash.to_owned())
 	}
 
@@ -166,36 +168,22 @@ impl Packet
 		let sock = match UdpSocket::bind("0.0.0.0:9001")
 		{
 			Ok(s) => s,
-			Err(_) =>
-			{
-				println!("  error: failed to bind to socket.");
-				exit(-1);
-			}
+			Err(_) => fail("failed to bind to socket", 2)
 		};
 
-		if let Err(_) = sock.connect("magnusi.tech:9001")
-		{
-			println!("  error: failed to connect to remote host. Are you connected to the internet?");
-			exit(-1);
-		}
+		if sock.connect("magnusi.tech:9001").is_err()
+			{fail("failed to connect to remote host. are you connected to the internet?", 3);}
 
 		let bytes = match self.clone().make()
 		{
 			Ok(b) => b,
-			Err(_) =>
-			{
-				println!("  error: failed to serialize packet. {:?}", self);
-				exit(-1);
-			}
+			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4)
 		};
 
 		loop
 		{
-			if let Err(_) = sock.send(&bytes)
-			{
-				println!("  error: failed to send data");
-				exit(-1);
-			};
+			if sock.send(&bytes).is_err()
+				{fail("failed to send data", 5);};
 
 			let mut res_buf = [0; 2 * 1024 * 1024]; // maximum response size is 2mb
 
@@ -209,11 +197,7 @@ impl Packet
 			let res = match Packet::read(&res_buf.to_vec())
 			{
 				Ok(p) => p,
-				Err(_) =>
-				{
-					println!("  error: failed to deserialize packet.");
-					exit(-1);
-				}
+				Err(_) => fail("failed to deserialize packet", 6)
 			};
 
 			return res;

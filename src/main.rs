@@ -14,47 +14,16 @@ extern crate toml;
 extern crate sha1;
 extern crate zip;
 
-mod uninstall;
-mod register;
+mod commands;
 mod packets;
-mod install;
-mod remove;
 mod config;
-mod upload;
-mod update;
-mod login;
+mod errors;
 mod types;
-mod build;
-mod find;
-mod help;
 mod util;
-mod test;
-mod scan;
-mod init;
-mod run;
-mod add;
-mod new;
 
-mod package;
-
-use uninstall::*;
-use register::*;
-use package::*;
-use install::*;
-use remove::*;
-use upload::*;
-use update::*;
-use build::*;
-use login::*;
 use types::*;
-use find::*;
-use help::*;
-use test::*;
-use scan::*;
-use init::*;
-use run::*;
-use add::*;
-use new::*;
+use errors::*;
+use commands::*;
 
 use std::process::exit;
 use std::env::args;
@@ -90,17 +59,9 @@ fn main()
 					"binary"|
 					"exe" =>
 						new_pebble(&arguments[2], PebbleType::Executable),
-					x =>
-					{
-						println!("unknown pebble type '{}'", x);
-						exit(-1);
-					}
+					x => fail1("unknown pebble type '{}'", x, 1)
 				},
-				_ =>
-				{
-					println!("usage: pebble new <name> <type>");
-					exit(-1);
-				},
+				_ => fail("usage: pebble new <name> <type>", 1)
 			}
 		}
 		"init" => match arguments.len()
@@ -126,53 +87,29 @@ fn main()
 				"binary"|
 				"exe" =>
 					init_pebble(&arguments[2], PebbleType::Executable),
-				x =>
-				{
-					println!("unknown pebble type '{}'", x);
-					exit(-1);
-				}
+				x => fail1("unknown pebble type '{}'", x, 1)
 			},
-			_ =>
-			{
-				println!("usage: pebble new <name> <type>");
-				exit(-1);
-			},
+			_ => fail("usage: pebble new <name> <type>", 1)
 		},
 		"scan" => match arguments.len()
 		{
 			2 => scan(),
-			_ =>
-			{
-				println!("usage: pebble scan #what else?");
-				exit(-1);
-			}
+			_ => fail("usage: pebble scan #what else?", 1)
 		},
 		"add" => match arguments.len()
 		{
 			3 => add(&arguments[2]),
-			_ =>
-			{
-				println!("usage: pebble add 'filename'");
-				exit(-1);
-			}
+			_ => fail("usage: pebble add 'filename'", 1)
 		},
 		"remove" | "del" => match arguments.len()
 		{
 			3 => remove(&arguments[2]),
-			_ =>
-			{
-				println!("usage: pebble remove 'filename'");
-				exit(-1);
-			}
+			_ => fail("usage: pebble remove 'filename'", 1)
 		},
 		"build" => match arguments.len()
 		{
 			2 => build(),
-			_ =>
-			{
-				println!("usage: pebble build");
-				exit(-1);
-			}
+			_ => fail("usage: pebble build", 1)
 		},
 		"help" => match arguments.len()
 		{
@@ -201,10 +138,6 @@ fn main()
 		},
 		"package" => { let _ = package(); }
 		"upload" => upload(),
-		x =>
-		{
-			println!("unknown operation: '{}'", x);
-			exit(-1);
-		}
+		x => fail1("unknown operation: '{}'", x, 1)
 	}
 }

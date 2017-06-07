@@ -1,4 +1,5 @@
 use config::Config;
+use errors::*;
 
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use recipe_reader::*;
@@ -8,7 +9,7 @@ use std::process::Command;
 use std::process::Stdio;
 use std::process::exit;
 
-pub fn uninstall()
+pub fn install()
 {
 	let mut recipe = Recipe::new();
 
@@ -16,28 +17,19 @@ pub fn uninstall()
 	{
 		recipe.read_errors(true);
 		if !recipe.ok
-		{
-			println!("  error: failed to read recipe, exiting");
-			exit(-1);
-		}
+			{fail("failed to read recipe, exiting", 34);}
 		let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));
 	}
 	else
-		{println!("  error: no recipe found in path"); exit(-1);}
+		{fail("no recipe found in path", 35);}
 
 	if !Path::new("pebble.toml").exists()
-	{
-		println!("  error: not a valid pebble, missing pebble.toml");
-		exit(-1);
-	}
+		{fail("not a valid pebble, missing pebble.toml", 36);}
+
 	let cfg = match Config::read()
 	{
 		Ok(c) => c,
-		Err(_) =>
-		{
-			println!("  error: failed to parse pebble.toml");
-			exit(-1);
-		}
+		Err(_) => fail("failed to parse pebble.toml", 37)
 	};
 
 	let name = match recipe.path.parent().unwrap().file_stem()
@@ -45,17 +37,9 @@ pub fn uninstall()
 		Some(n) => match n.to_str()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not read name string");
-				exit(-1);
-			}
+			None => fail("could not read name string", 38)
 		},
-		None =>
-		{
-			println!("  error: invalid project path");
-			exit(-1);
-		}
+		None => fail("invalid project path", 39)
 	};
 
 	if let Some(ref bcfg) = cfg.build
@@ -63,7 +47,7 @@ pub fn uninstall()
 		if let Some(ref install) = bcfg.install
 		{
 			println!("  {} [{}]",
-				Yellow.bold().paint("uninstalling"),
+				Yellow.bold().paint("installing"),
 				Green.bold().paint(name)
 			);
 
@@ -91,15 +75,8 @@ pub fn uninstall()
 			}
 		}
 		else
-		{
-			println!("  error: can't uninstall due to missing install instructions");
-			exit(-1);
-		}
+			{fail("can't install due to missing install instructions", 40)}
 	}
 	else
-	{
-		println!("  error: can't uninstall due to missing build section");
-		exit(-1);
-	}
+		{fail("can't install due to missing build section", 41)}
 }
-

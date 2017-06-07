@@ -1,4 +1,5 @@
 use packets::{Packet, PacketType};
+use errors::*;
 
 use ansi_term::Colour::{Yellow, Green};
 use sha1::Sha1;
@@ -19,11 +20,7 @@ pub fn register(name: &str, passwd: &str)
 
 	match res.ptype
 	{
-		PacketType::Error =>
-		{
-			println!("  error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
+		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 72),
 		PacketType::Register =>
 		{
 			println!("  {}",

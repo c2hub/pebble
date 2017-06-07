@@ -1,5 +1,6 @@
 use packets::{Packet, PacketType};
 use types::User;
+use errors::*;
 
 use ansi_term::Colour::{Yellow, Green};
 use sha1::Sha1;
@@ -25,11 +26,7 @@ pub fn login(name: &str, passwd: &str)
 
 	match res.ptype
 	{
-		PacketType::Error =>
-		{
-			println!("  error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
+		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 42),
 		PacketType::Login =>
 		{
 			let mut f = match File::create(
@@ -37,11 +34,7 @@ pub fn login(name: &str, passwd: &str)
 			)
 			{
 				Ok(f) => f,
-				Err(_) =>
-				{
-					println!("  error: failed to create login file");
-					exit(-1);
-				}
+				Err(_) => fail("failed to create login file", 43)
 			};
 
 			let _ = write!(f, "{}",

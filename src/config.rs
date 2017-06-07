@@ -3,6 +3,8 @@ use std::fs::File;
 use std::io::Read;
 use std::process::exit;
 
+use errors::*;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config
 {
@@ -54,18 +56,11 @@ impl Config
 		let mut me = match File::open("pebble.toml")
 		{
 			Ok(f) => f,
-			Err(_) =>
-			{
-				println!("  error: failed to open pebble.toml");
-				exit(-1);
-			}
+			Err(_) => fail("failed to open pebble.toml", 7)
 		};
 		let mut contents = String::new();
 		if me.read_to_string(&mut contents).is_err()
-		{
-			println!("  error: failed to read pebble.toml");
-			exit(-1);
-		}
+			{fail("failed to read pebble.toml", 8)}
 		toml::from_str(contents.as_ref())
 	}
 

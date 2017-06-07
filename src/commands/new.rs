@@ -1,4 +1,5 @@
 use types::PebbleType;
+use errors::*;
 use util::*;
 
 use ansi_term::Colour::{Yellow, Green};
@@ -17,17 +18,9 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 		Some(n) => match n.to_str()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not read name string");
-				exit(-1);
-			}
+			None => fail("could not read name string", 44)
 		},
-		None =>
-		{
-			println!("  error: invalid project path");
-			exit(-1);
-		}
+		None => fail("invalid project path", 45)
 	};
 	println!("  {} new pebble [{}] in directory '{}'...",
 		Yellow.bold().paint("creating"),
@@ -37,20 +30,11 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 	if !proj_path.exists()
 	{
 		if create_dir_all(&proj_path).is_err()
-		{
-		    println!("  error: failed to create pebble's directory");
-		    exit(-1);
-		}
+			{fail("failed to create pebble's directory", 46);}
 		if set_current_dir(&proj_path).is_err()
-		{
-			println!("  error: failed to change directory");
-			exit(-1);
-		}
+			{fail("failed to change directory", 47);}
 		if create_dir(Path::new("src")).is_err()
-		{
-			println!("  error: failed to create source directory");
-			exit(-1);
-		}
+			{fail("failed to create source directory", 48);}
 		match kind
 		{
 			PebbleType::Executable =>
@@ -59,22 +43,14 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", EXECUTABLE_RECIPE_STUB.replace("[[name]]", name));},
-					Err(_) =>
-					{
-						println!("  error: failed to create recipe file");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create recipe file", 49)
 				};
 
 				match File::create("src/main.c2")
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", EXECUTABLE_HELLO_WORLD.replace("[[name]]", name));},
-					Err(_) =>
-					{
-						println!("  error: failed to create src/main.c2");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create src/main.c2", 50)
 				};
 			},
 			PebbleType::StaticLib =>
@@ -83,33 +59,21 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", STATICLIB_RECIPE_STUB.replace("[[name]]", name));},
-					Err(_) =>
-					{
-						println!("  error: failed to create recipe file");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create recipe file", 51)
 				}
 
 				match File::create("src/lib.c2")
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", STATICLIB_HELLO_WORLD.replace("[[name]]", name));},
-					Err(_) =>
-					{
-						println!("  error: failed to create src/lib.c2");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create src/lib.c2", 52)
 				}
 
 				match File::create("tests.c2")
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", LIB_TEST.replace("[[name]]", name));}
-					Err(_) =>
-					{
-						println!("  error: failed to create tests.c2");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create tests.c2", 53)
 				}
 			},
 			PebbleType::SharedLib =>
@@ -118,33 +82,21 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", SHAREDLIB_RECIPE_STUB.replace("[[name]]", name));}
-					Err(_) =>
-					{
-						println!("  error: failed to create recipe file");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create recipe file", 54)
 				}
 
 				match File::create("src/lib.c2")
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", SHAREDLIB_HELLO_WORLD.replace("[[name]]", name));},
-					Err(_) =>
-					{
-						println!("  error: failed to create src/lib.c2");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create src/lib.c2", 55)
 				}
 
 				match File::create("tests.c2")
 				{
 					Ok(mut f) =>
 						{let _ = write!(f, "{}", LIB_TEST.replace("[[name]]", name));}
-					Err(_) =>
-					{
-						println!("  error: failed to create tests.c2");
-						exit(-1);
-					}
+					Err(_) => fail("failed to create tests.c2", 56)
 				}
 			}
 		}
@@ -153,11 +105,7 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 		{
 			Ok(mut f) =>
 				{let _ = write!(f, "{}", PEBBLE_TOML.replace("[[name]]", name));},
-			Err(_) =>
-			{
-				println!("  error: failed to create pebble.toml");
-				exit(-1);
-			}
+			Err(_) => fail("failed to create pebble.toml", 57)
 		}
 
 		Command::new("git")
@@ -173,11 +121,6 @@ pub fn new_pebble(path_str: &str, kind: PebbleType)
 		);
 	}
 	else
-	{
-		println!(
-			"  error: directory '{0}' already exists, did you mean to use 'pebble init {0}' instead?",
-			path_str
-		);
-		exit(-1);
-	}
+		{fail1("'pebble new' is for new pebbles, did you mean to use 'pebble init {}' instead", path_str, 58);}
+
 }

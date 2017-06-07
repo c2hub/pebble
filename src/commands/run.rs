@@ -1,4 +1,5 @@
-use build::build;
+use commands::build;
+use errors::*;
 
 use ansi_term::Colour::{Yellow, Green};
 use recipe_reader::*;
@@ -11,11 +12,7 @@ pub fn run(args: Vec<String>)
 	let orig_cwd = match current_dir()
 	{
 		Ok(d) => d,
-		Err(_) =>
-		{
-			println!("  error: failed to get current directory path");
-			exit(-1);
-		}
+		Err(_) => fail("failed to get current directory path", 75)
 	};
 
 	build();
@@ -26,36 +23,20 @@ pub fn run(args: Vec<String>)
 	// technically shouldn't occur since build() read the recipe
 	// already, but just to be sure... one never knows...
 	if !recipe.ok
-	{
-		println!("  error: failed to read recipe, exiting");
-		exit(-1);
-	}
+		{fail("failed to read recipe, exiting", 76);}
 
 	let pebble_name = match recipe.path.parent().unwrap().file_stem()
 	{
 		Some(n) => match n.to_str()
 		{
 			Some(s) => s,
-			None =>
-			{
-				println!("  error: could not read name string");
-				exit(-1);
-			}
+			None => fail("could not read name string", 77)
 		},
-		None =>
-		{
-			println!("  error: invalid project path");
-			exit(-1);
-		}
+		None => fail("invalid project path", 78)
 	};
 
 	if recipe.targets[0].kind != TargetType::Executable
-	{
-		println!("  error: pebble [{}] is a library, did you mean to use 'pebble test'?",
-			Green.bold().paint(pebble_name)
-		);
-		exit(-1);
-	}
+		{fail1("pebble [{}] is a library, did you mean to use 'pebble test'?", Green.bold().paint(pebble_name), 79);}
 
 	let exe_path = match current_dir()
 	{
@@ -65,18 +46,12 @@ pub fn run(args: Vec<String>)
 			+ "/"
 			+ pebble_name,
 		Err(_) =>
-		{
-			println!("  error: failed to get current directory");
-			exit(-1);
-		}
+			{fail("failed to get current directory", 80)}
 	};
 
 	// restore original cwd, so that pebble run can be used from anywhere within the pebble
 	if set_current_dir(orig_cwd).is_err()
-	{
-		println!("  error: failed to change current directory");
-		exit(-1);
-	};
+		{fail("failed to change current directory", 81);};
 
 	println!("  {} '{} {}'",
 		Yellow.bold().paint("running"),

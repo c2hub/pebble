@@ -1,7 +1,8 @@
 use packets::{Packet, PacketType};
-use package::package;
+use commands::package;
 use config::Config;
 use types::User;
+use errors::*;
 
 use toml;
 use recipe_reader::*;
@@ -25,29 +26,19 @@ pub fn upload()
 	{
 		recipe.read_errors(true);
 		if !recipe.ok
-		{
-			println!("  error: failed to read recipe, exiting");
-			exit(-1);
-		}
+			{fail("failed to read recipe, exiting", 102);}
 		let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));
 	}
 	else
-		{println!("  error: no recipe found in path"); exit(-1);}
+		{fail("no recipe found in path", 103);}
 
 	if !Path::new("pebble.toml").exists()
-	{
-		println!("  error: not a valid pebble, missing pebble.toml");
-		exit(-1);
-	}
+		{fail("not a valid pebble, missing pebble.toml", 104);}
 
 	let cfg = match Config::read()
 	{
 		Ok(c) => c,
-		Err(_) =>
-		{
-			println!("  error: failed to parse pebble.toml");
-			exit(-1);
-		}
+		Err(_) => fail("failed to parse pebble.toml", 105)
 	};
 
 	let mut f = match File::open(
@@ -55,36 +46,22 @@ pub fn upload()
 	)
 	{
 		Ok(f) => f,
-		Err(_) =>
-		{
-			println!("  error: failed to open login file, are you logged in?");
-			exit(-1);
-		}
+		Err(_) => fail("failed to open login file, are you logged in", 106)
 	};
 
 	let user: User = match toml::from_str(&{
 		let mut s = String::new();
 		if f.read_to_string(&mut s).is_err()
-		{
-			println!("  error: failed to read login file");
-			exit(-1);
-		}
+			{fail("failed to read login file", 107);}
 		s
 	})
 	{
 		Ok(u) => u,
-		Err(_) =>
-		{
-			println!("  error: failed to parse login file, relogin.");
-			exit(-1);
-		}
+		Err(_) => fail("failed to parse login file, relogin", 108)
 	};
 
-	if Version::from(&cfg.pebble.version).is_some()
-	{
-		println!("  error: version string is not a valid version");
-		exit(-1);
-	}
+	if !Version::from(&cfg.pebble.version).is_some()
+		{fail("version string is not a valid version", 109);}
 
 	println!("  {} pebble [{}] version {}",
 		Yellow.bold().paint("uploading"),
@@ -96,17 +73,13 @@ pub fn upload()
 		&user.name,
 		&user.hash,
 		bytes,
-		cfg.pebble.name.as_ref(),
-		cfg.pebble.version.as_ref(),
+		&cfg.pebble.name,
+		&cfg.pebble.version,
 	).send();
 
 	match res.ptype
 	{
-		PacketType::Error =>
-		{
-			println!(" error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
+		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 110),
 		PacketType::Upload =>
 		{
 			println!("  {} successful",

@@ -4,6 +4,8 @@ use std::env::set_current_dir;
 use std::path::Path;
 use std::process::exit;
 
+use errors::*;
+
 pub fn add(filename: &str)
 {
 	let mut recipe = Recipe::new();
@@ -11,13 +13,10 @@ pub fn add(filename: &str)
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
 	else
-		{println!("  error: no recipe found in path"); exit(-1);}
+		{fail("no recipe found in path",9);}
 
 	if !Path::new("pebble.toml").exists()
-	{
-		println!("  error: not a valid pebble, missing pebble.toml");
-		exit(-1);
-	}
+		{fail("not a valid pebble, missing pebble.toml", 10);}
 
 	if Path::new(filename).exists()
 	{
@@ -47,10 +46,7 @@ pub fn add(filename: &str)
 		}
 	}
 	else
-	{
-		println!("  error: '{}' not found", filename);
-		exit(-1);
-	}
+		{fail1("'{}' not found", filename, 11);}
 
 	recipe.write();
 }

@@ -1,3 +1,4 @@
+use errors::*;
 use packets::{Packet, PacketType};
 
 use ansi_term::Colour::{Yellow, Green, Red};
@@ -14,11 +15,7 @@ pub fn find(name: &str)
 
 	match res.ptype
 	{
-		PacketType::Error =>
-		{
-			println!("  error occured: {}", res.name.unwrap());
-			exit(-1);
-		},
+		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 18),
 		PacketType::Find =>
 		{
 			let data = res.data.unwrap();
