@@ -1,6 +1,16 @@
+use errors::{fail, fail1};
 use types::PebbleType;
-use errors::*;
-use util::*;
+use util::
+{
+	EXECUTABLE_RECIPE_STUB,
+	EXECUTABLE_HELLO_WORLD,
+	STATICLIB_RECIPE_STUB,
+	STATICLIB_HELLO_WORLD,
+	SHAREDLIB_RECIPE_STUB,
+	SHAREDLIB_HELLO_WORLD,
+	PEBBLE_TOML,
+	LIB_TEST,
+};
 
 use std::fs::{create_dir_all, create_dir, File};
 use ansi_term::Colour::{Yellow, Green};

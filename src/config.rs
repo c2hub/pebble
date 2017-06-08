@@ -2,7 +2,7 @@ use std::io::Read;
 use std::fs::File;
 use toml;
 
-use errors::*;
+use errors::fail;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config

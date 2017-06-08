@@ -1,11 +1,12 @@
+use util::{INIT_TEST, PEBBLE_TOML};
+use errors::{fail, fail1};
 use types::PebbleType;
-use errors::*;
-use util::*;
 
-use ansi_term::Colour::{Yellow, Green};
-use recipe_reader::*;
+
+use recipe_reader::{Recipe, TargetOptions, TargetType, Target};
 use std::fs::{create_dir, File, read_dir, copy, remove_file};
 use std::env::{set_current_dir, current_dir};
+use ansi_term::Colour::{Yellow, Green};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::io::Write;

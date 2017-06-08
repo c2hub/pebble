@@ -1,5 +1,5 @@
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
-use recipe_reader::*;
+use recipe_reader::Recipe;
 use config::Config;
 
 use std::env::set_current_dir;
@@ -8,7 +8,7 @@ use std::process::Stdio;
 use std::process::exit;
 use std::path::Path;
 
-use errors::*;
+use errors::fail;
 
 pub fn build()
 {

@@ -1,9 +1,9 @@
 use commands::build;
-use errors::*;
+use errors::{fail, fail1};
 
 use ansi_term::Colour::{Yellow, Green};
 use walkdir::WalkDirIterator;
-use recipe_reader::*;
+use recipe_reader::Recipe;
 use walkdir;
 use zip;
 
@@ -61,6 +61,7 @@ pub fn package() -> Vec<u8>
 			|e| !(e.file_name().to_str().unwrap().contains(".git")
 				|| e.path().to_str().unwrap().contains("output")
 				|| e.path().to_str().unwrap().contains("package.zip")
+				|| e.path().to_str().unwrap().contains("libs")
 				|| e.file_name().to_str().unwrap().ends_with('/'))
 			)
 	{

@@ -5,7 +5,7 @@ use std::fmt::Display;
 
 pub fn fail(msg: &str, code: i32) -> !
 {
-	println!("  {} {}",
+	eprintln!("  {} {}",
 		Red.bold().paint("error"),
 		msg
 	);
@@ -14,7 +14,7 @@ pub fn fail(msg: &str, code: i32) -> !
 
 pub fn fail1<T: Display>(msg: &str, arg: T, code: i32) -> !
 {
-	println!("  {} {}",
+	eprintln!("  {} {}",
 		Red.bold().paint("error"),
 		msg.replace("{}", &arg.to_string())
 	);

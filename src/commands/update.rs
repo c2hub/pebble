@@ -3,7 +3,7 @@ use hyper::client::Client;
 
 use std::io::Read;
 
-use errors::*;
+use errors::fail;
 
 pub fn update()
 {

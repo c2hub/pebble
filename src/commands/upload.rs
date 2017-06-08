@@ -1,12 +1,12 @@
 use packets::{Packet, PacketType};
 use commands::package;
 use config::Config;
+use errors::fail;
 use types::User;
-use errors::*;
 
 use ansi_term::Colour::{Green, Yellow, Red};
 use version_compare::Version;
-use recipe_reader::*;
+use recipe_reader::Recipe;
 use toml;
 
 use std::env::set_current_dir;

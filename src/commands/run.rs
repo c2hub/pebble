@@ -1,5 +1,5 @@
+use errors::{fail, fail1};
 use commands::build;
-use errors::*;
 
 use std::env::{set_current_dir, current_dir};
 use ansi_term::Colour::{Yellow, Green};

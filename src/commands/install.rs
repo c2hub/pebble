@@ -1,11 +1,11 @@
 use config::Config;
-use errors::*;
+use errors::fail;
 
 use ansi_term::Colour::{Yellow, Green, Red, Blue};
 use std::env::set_current_dir;
 use std::process::Command;
+use recipe_reader::Recipe;
 use std::process::Stdio;
-use recipe_reader::*;
 use std::path::Path;
 
 pub fn install()

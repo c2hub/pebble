@@ -1,9 +1,9 @@
 use ansi_term::Colour::{Yellow, Green};
 use std::env::set_current_dir;
-use recipe_reader::*;
+use recipe_reader::Recipe;
 use std::path::Path;
 
-use errors::*;
+use errors::fail;
 
 pub fn remove(filename: &str)
 {

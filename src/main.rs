@@ -21,9 +21,9 @@ mod errors;
 mod types;
 mod util;
 
+use errors::{fail, fail1};
+use types::PebbleType;
 use commands::*;
-use errors::*;
-use types::*;
 
 use std::env::args;
 

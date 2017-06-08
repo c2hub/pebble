@@ -1,6 +1,6 @@
 use packets::{Packet, PacketType};
+use errors::{fail, fail1};
 use types::User;
-use errors::*;
 
 use ansi_term::Colour::{Yellow, Green};
 use sha1::Sha1;

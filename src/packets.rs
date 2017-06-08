@@ -3,7 +3,7 @@ use serde_cbor;
 
 use std::net::UdpSocket;
 
-use errors::*;
+use errors::{fail, fail1};
 
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct Packet
