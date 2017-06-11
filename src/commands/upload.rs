@@ -1,7 +1,7 @@
 use packets::{Packet, PacketType};
+use errors::{fail, fail1};
 use commands::package;
 use config::Config;
-use errors::fail;
 use types::User;
 
 use ansi_term::Colour::{Green, Yellow, Red};
