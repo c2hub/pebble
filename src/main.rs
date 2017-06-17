@@ -26,7 +26,7 @@ use types::PebbleType;
 use errors::fail1;
 use commands::*;
 
-use clap::{App, SubCommand, Arg};
+use clap::{App, SubCommand, Arg, AppSettings};
 
 fn main()
 {
@@ -35,6 +35,7 @@ fn main()
 		.version("0.8.15")
 		.author("Lukáš Hozda [magnusi] <luk.hozda@gmail.com>")
 		.about("Pebble is a simple package and dependency manager for C2, akin to cargo.")
+		.settings(&[AppSettings::ColoredHelp])
 		.subcommand(SubCommand::with_name("new")
 			.about("generates a new pebble")
 			.version("1.0.0")
