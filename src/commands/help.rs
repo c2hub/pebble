@@ -1,5 +1,6 @@
 use std::process::exit;
 
+#[allow(dead_code)]
 pub fn help(cmd: &str)
 {
 	fn general()
