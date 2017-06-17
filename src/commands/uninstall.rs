@@ -43,14 +43,14 @@ pub fn uninstall()
 
 	if let Some(ref bcfg) = cfg.build
 	{
-		if let Some(ref install) = bcfg.install
+		if let Some(ref uninstall) = bcfg.uninstall
 		{
 			println!("  {} [{}]",
 				Yellow.bold().paint("uninstalling"),
 				Green.bold().paint(name)
 			);
 
-			for cmd_str in install
+			for cmd_str in uninstall
 			{
 				println!("  {} '{}'",
 					Yellow.bold().paint("executing"),
