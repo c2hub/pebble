@@ -79,7 +79,7 @@ pub fn upload()
 	match res.ptype
 	{
 		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 110),
-		PacketType::Upload =>
+		PacketType::Publish =>
 		{
 			println!("  {} successful",
 				Yellow.bold().paint("upload")

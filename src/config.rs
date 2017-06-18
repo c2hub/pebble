@@ -34,7 +34,7 @@ pub struct Dependency
 pub struct LibCfg
 {
 	pub claim: Vec<String>,
-	pub extra: Vec<String>,
+	pub extra: Option<Vec<String>>,
 	pub version: Option<String>,
 }
 

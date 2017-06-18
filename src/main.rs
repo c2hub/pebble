@@ -35,7 +35,7 @@ fn main()
 		.version("0.8.15")
 		.author("Lukáš Hozda [magnusi] <luk.hozda@gmail.com>")
 		.about("Pebble is a simple package and dependency manager for C2, akin to cargo.")
-		.settings(&[AppSettings::ColoredHelp])
+		.global_settings(&[AppSettings::ColoredHelp])
 		.subcommand(SubCommand::with_name("new")
 			.about("generates a new pebble")
 			.version("1.0.0")
@@ -158,6 +158,10 @@ fn main()
 			.about("upload a pebble to the pebble index, uploads a pebble as a whole, not like a library")
 			.version("0.9.0") // Chop up bytes and send it as parts, not like one huge packet. That will also allow pebbles bigger than 60kb
 			.author("Lukáš Hozda"))
+		.subcommand(SubCommand::with_name("publish")
+			.about("publish a pebble as a library, only uploads claim files in pebble.toml")
+			.version("0.1.0")
+			.author("Lukáš Hozda"))
 		.get_matches();
 
 	match matches.subcommand()
@@ -213,6 +217,7 @@ fn main()
 		),
 		("package", _) => {let _ = package();},
 		("upload",  _) => upload(),
+		("publish", _) => publish(),
 		_ => unreachable!()
 	}
 }

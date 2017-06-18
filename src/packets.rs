@@ -136,14 +136,16 @@ impl Packet
 			.extra(hash.to_owned())
 	}
 
-	pub fn publish(name: &str, file: Vec<u8>, version: &str) -> Packet
+	pub fn publish(uname: &str, hash: &str, file: Vec<u8>, name: &str, version: &str) -> Packet
 	{
 		let lib_name = "lib".to_string() + name;
 		Packet::new()
 			.ptype(PacketType::Publish)
-			.name(lib_name)
+			.name(lib_name.to_owned())
 			.raw_data(file)
 			.data(version.to_owned())
+			.data2(uname.to_owned())
+			.extra(hash.to_owned())
 	}
 
 	/*
@@ -184,7 +186,7 @@ impl Packet
 			if sock.send(&bytes).is_err()
 				{fail("failed to send data", 5);};
 
-			let mut res_buf = [0; 2 * 1024 * 1024]; // maximum response size is 2mb
+			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
 
 			let res_size = match sock.recv(&mut res_buf)
 			{
