@@ -9,7 +9,8 @@ pub struct Config
 {
 	pub pebble: PackageCfg,
 	pub lib: Option<LibCfg>,
-	pub build: Option<BuildCfg>
+	pub build: Option<BuildCfg>,
+	pub dependencies: Option<Vec<Dependency>>,
 }
 
 
@@ -20,7 +21,6 @@ pub struct PackageCfg
 	pub version: String,
 	pub source_dir: Option<String>,	//TODO
 	pub license: Option<String>,
-	pub dependencies: Option<Vec<Dependency>>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
