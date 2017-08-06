@@ -108,12 +108,29 @@ pub fn publish()
 					{fail("failed to write file to zip", 123);}
 			}
 		}
+
+		if zip.start_file(
+			"pebble.toml", zip::write::FileOptions::default()
+		).is_err()
+			{fail("failed to start a file in zip", 122);}
+
+		let mut f = match File::open("pebble.toml")
+		{
+			Ok(f) => f,
+			Err(_) => fail("failed to open pebble.toml for reading", 121)
+		};
+		let mut content = String::new();
+
+		if f.read_to_string(&mut content).is_ok()
+		&& zip.write(&{ let v: Vec<u8> = content.bytes().collect(); v }).is_err()
+			{fail("failed to write file to zip", 123);}
+
 	} else {fail("missing libcfg", 124); }
 
 	if zip.finish().is_err()
 		{fail("failed to finish writing zip", 125);}
 
-	let mut zip_f = match File::open("package.zip")
+	let mut zip_f = match File::open("libpackage.zip")
 	{
 		Ok(f) => f,
 		Err(_) => fail("failed to open zip file for reading", 126)

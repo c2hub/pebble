@@ -109,12 +109,11 @@ impl Packet
 			.data(hash.to_owned())
 	}
 
-	pub fn update(name: &str, version: &str) -> Packet
+	pub fn update(data: &str) -> Packet
 	{
 		Packet::new()
 			.ptype(PacketType::Update)
-			.name(name.to_owned())
-			.data(version.to_owned())
+			.name(data.to_owned())
 	}
 
 	pub fn find(name: &str, version: &str) -> Packet
@@ -166,13 +165,13 @@ impl Packet
 	*/
 	pub fn send(self) -> Packet
 	{
-		let sock = match UdpSocket::bind("0.0.0.0:9001")
+		let sock = match UdpSocket::bind("0.0.0.0:0")
 		{
 			Ok(s) => s,
 			Err(_) => fail("failed to bind to socket", 2)
 		};
 
-		if sock.connect("magnusi.tech:9001").is_err()
+		if sock.connect("localhost:9001").is_err()
 			{fail("failed to connect to remote host. are you connected to the internet?", 3);}
 
 		let bytes = match self.clone().make()
