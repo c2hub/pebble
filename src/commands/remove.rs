@@ -1,6 +1,7 @@
-use ansi_term::Colour::{Yellow, Green};
+use ansi_term::Colour::{Yellow, Green, Red};
 use std::env::set_current_dir;
 use recipe_reader::Recipe;
+use std::process::Command;
 use std::path::Path;
 
 use errors::fail;
@@ -8,6 +9,8 @@ use errors::fail;
 pub fn remove(filename: &str)
 {
 	let mut recipe = Recipe::new();
+	let mut path = String::new();
+	let found = false;
 
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
@@ -19,16 +22,49 @@ pub fn remove(filename: &str)
 	for mut t in &mut recipe.targets
 	{
 		if t.files.contains(&filename.to_string())
-		|| t.files.contains(&("src/".to_string() + filename))
 		{
 			t.files.remove_item(&filename.to_string());
+			println!("  {} {} from [{}]",
+				Yellow.bold().paint("removed"),
+				filename,
+				Green.bold().paint(t.name.clone())
+			);
+
+			path = filename.to_string();
+			found = true;
+		}
+		else if t.files.contains(&("src/".to_string() + filename))
+		{
 			t.files.remove_item(&("src/".to_string() + filename));
 			println!("  {} {} from [{}]",
 				Yellow.bold().paint("removed"),
 				filename,
 				Green.bold().paint(t.name.clone())
 			);
+
+			path = "src/".to_string() + filename;
+			found = true;
 		}
 	}
-	recipe.write();
+
+	if found
+	{
+		let cmd = Command::new("git")
+			.arg("rm")
+			.arg("--cached")
+			.arg(&path)
+			.output()
+			.expect("failed to execute git");
+		if !cmd.status.success()
+		{
+			println!("  {} git returned a non-zero exit code",
+				Red.bold().paint("error")
+			);
+		}
+		recipe.write();
+	}
+	else
+	{
+		println!("  {} file not found", Red.bold().paint("error"));
+	}
 }

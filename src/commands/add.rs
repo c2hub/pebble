@@ -1,6 +1,7 @@
-use ansi_term::Colour::{Yellow, Green};
+use ansi_term::Colour::{Yellow, Green, Red};
 use std::env::set_current_dir;
 use recipe_reader::Recipe;
+use std::process::Command;
 use std::path::Path;
 
 use errors::{fail, fail1};
@@ -8,6 +9,7 @@ use errors::{fail, fail1};
 pub fn add(filename: &str)
 {
 	let mut recipe = Recipe::new();
+	let mut path = filename.to_string();
 
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
@@ -43,9 +45,23 @@ pub fn add(filename: &str)
 				Green.bold().paint(t.name.clone())
 			);
 		}
+
+		path = "src/".to_string() + filename;
 	}
 	else
 		{fail1("'{}' not found", filename, 11);}
+
+	let cmd = Command::new("git")
+		.arg("add")
+		.arg(&path)
+		.output()
+		.expect("  error: failed to run command");
+	if !cmd.status.success()
+	{
+		println!("  {} git returned a non-zero exit code",
+			Red.bold().paint("error")
+		);
+	}
 
 	recipe.write();
 }
