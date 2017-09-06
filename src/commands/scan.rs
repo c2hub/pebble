@@ -31,7 +31,7 @@ pub fn scan()
 
 		if !recipe.targets[0].files.contains(&file.path().to_string_lossy().deref().to_string())
 		{
-			for mut t in &mut recipe.targets
+			for t in &mut recipe.targets
 				{t.files.insert(0, file.path().to_string_lossy().deref().to_string());}
 			println!("  {} {}",
 				Yellow.bold().paint("adding"),
@@ -40,7 +40,7 @@ pub fn scan()
 		}
 	}
 
-	for mut t in &mut recipe.targets
+	for t in &mut recipe.targets
 	{
 		for file in t.files.clone()
 		{

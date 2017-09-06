@@ -1,4 +1,4 @@
-use packets::{Packet, PacketType};
+use packets::Packet;
 use errors::fail1;
 
 use ansi_term::Colour::{Yellow, Green, Red};
@@ -14,18 +14,17 @@ pub fn find(name: &str)
 
 	let res = Packet::find(name, "*").send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 18),
-		PacketType::Find =>
+		Packet::Error { msg } => fail1("packet -> {}", msg, 18),
+		Packet::Find { name, version } =>
 		{
-			let data = res.data.unwrap();
-			if data != "none"
+			if version != "none"
 			{
 				println!("  {} [{}] version {}",
 					Yellow.bold().paint("found"),
 					Green.bold().paint(name),
-					data
+					version
 				);
 			}
 			else
@@ -48,18 +47,17 @@ pub fn find_ver(name: &str, version: &str) -> bool
 
 	let res = Packet::find(name, version).send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 18),
-		PacketType::Find =>
+		Packet::Error { msg } => fail1("packet -> {}", msg, 18),
+		Packet::Find { name, version } =>
 		{
-			let data = res.data.unwrap();
-			if data != "none"
+			if version != "none"
 			{
 				println!("  {} [{}] version {}",
 					Yellow.bold().paint("found"),
 					Green.bold().paint(name),
-					data
+					version
 				);
 				true
 			}

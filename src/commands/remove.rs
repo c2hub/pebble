@@ -10,7 +10,7 @@ pub fn remove(filename: &str)
 {
 	let mut recipe = Recipe::new();
 	let mut path = String::new();
-	let found = false;
+	let mut found = false;
 
 	if Recipe::find() != None
 		{recipe.read(); let _ = set_current_dir(Path::new(&recipe.path.parent().unwrap()));}
@@ -19,7 +19,7 @@ pub fn remove(filename: &str)
 
 	if !Path::new("pebble.toml").exists()
 		{fail("not a valid pebble, missing pebble.toml", 74);}
-	for mut t in &mut recipe.targets
+	for t in &mut recipe.targets
 	{
 		if t.files.contains(&filename.to_string())
 		{

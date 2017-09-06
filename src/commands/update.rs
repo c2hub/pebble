@@ -8,10 +8,10 @@ use std::io::{Read, Write};
 use std::env::set_current_dir;
 use std::fs::{File, create_dir, read_dir};
 
+use packets::Packet;
 use errors::{fail, fail1};
 use commands::find::find_ver;
 use config::{Dependency, Config};
-use packets::{Packet, PacketType};
 
 pub fn update()
 {
@@ -37,9 +37,9 @@ pub fn update()
 
 	let index = Packet::update("hello").send();
 
-	match index.ptype
+	match index
 	{
-		PacketType::Update =>
+		Packet::Update { .. } =>
 		{
 			if let Some(deps) = cfg.dependencies
 			{
@@ -47,7 +47,7 @@ pub fn update()
 				unpack_deps();
 			} else { println!("fail?"); return;}
 		},
-		PacketType::Error => fail1("packet -> {}", index.name.unwrap(), 7452),
+		Packet::Error { msg } => fail1("packet -> {}", msg, 7452),
 		_ => unreachable!()
 	}
 }
@@ -63,7 +63,13 @@ pub fn fetch_deps(deps: Vec<Dependency>)
 		);
 		if find_ver(&format!("lib{}", &dep.name), &dep.version)
 		{
-			let last_ver = Packet::find(&format!("lib{}", &dep.name), &dep.version).send().data.unwrap();
+			let last_ver = match Packet::find(&format!("lib{}", &dep.name), &dep.version)
+				.send()
+			{
+				Packet::Find { version, .. } => version,
+				Packet::Error { msg } => fail1("packet -> {}", msg, 110),
+				_ => unreachable!(),
+			};
 
 			println!("  {} [{}] {} ",
 				Yellow.bold().paint("downloading"),

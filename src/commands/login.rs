@@ -1,5 +1,5 @@
-use packets::{Packet, PacketType};
 use errors::{fail, fail1};
+use packets::Packet;
 use types::User;
 
 use ansi_term::Colour::{Yellow, Green};
@@ -23,10 +23,10 @@ pub fn login(name: &str, passwd: &str)
 	let res = Packet::login(name, &hash)
 		.send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 42),
-		PacketType::Login =>
+		Packet::Error {msg} => fail1("packet -> {}", msg, 42),
+		Packet::Login { .. } =>
 		{
 			let mut f = match File::create(
 				&{let mut temp = temp_dir(); temp.push("pebble_usr"); temp}

@@ -21,7 +21,7 @@ pub fn add(filename: &str)
 
 	if Path::new(filename).exists()
 	{
-		for mut t in &mut recipe.targets
+		for t in &mut recipe.targets
 		{
 			t.files.push(filename.to_string());
 
@@ -35,7 +35,7 @@ pub fn add(filename: &str)
 	else if !Path::new(filename).exists()
 	&& Path::new(&("src/".to_string() + filename)).exists()
 	{
-		for mut t in &mut recipe.targets
+		for t in &mut recipe.targets
 		{
 			t.files.push("src/".to_string() + filename);
 

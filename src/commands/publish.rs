@@ -1,8 +1,8 @@
 use types::User;
 use config::Config;
+use packets::Packet;
 use commands::build;
 use errors::{fail, fail1};
-use packets::{Packet, PacketType};
 
 use ansi_term::Colour::{Yellow, Green, Red};
 use version_compare::Version;
@@ -176,10 +176,10 @@ pub fn publish()
 		&cfg.pebble.version,
 	).send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 131),
-		PacketType::Publish =>
+		Packet::Error { msg } => fail1("packet -> {}", msg, 131),
+		Packet::Publish { .. } =>
 		{
 			println!("  {} successful",
 				Yellow.bold().paint("upload")

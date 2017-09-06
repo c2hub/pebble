@@ -1,6 +1,6 @@
-use packets::{Packet, PacketType};
 use errors::{fail, fail1};
 use commands::package;
+use packets::Packet;
 use config::Config;
 use types::User;
 
@@ -76,10 +76,10 @@ pub fn upload()
 		&cfg.pebble.version,
 	).send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 110),
-		PacketType::Publish =>
+		Packet::Error { msg } => fail1("packet -> {}", msg, 110),
+		Packet::Publish { .. } =>
 		{
 			println!("  {} successful",
 				Yellow.bold().paint("upload")

@@ -1,4 +1,4 @@
-use packets::{Packet, PacketType};
+use packets::Packet;
 use errors::fail1;
 
 use ansi_term::Colour::{Yellow, Green};
@@ -17,10 +17,10 @@ pub fn register(name: &str, passwd: &str)
 	let res = Packet::register(name, &hash.digest().to_string())
 		.send();
 
-	match res.ptype
+	match res
 	{
-		PacketType::Error => fail1("packet -> {}", res.name.unwrap(), 72),
-		PacketType::Register =>
+		Packet::Error { msg } => fail1("packet -> {}", msg, 72),
+		Packet::Register { .. } =>
 		{
 			println!("  {}",
 				Yellow.bold().paint("registration successful")
