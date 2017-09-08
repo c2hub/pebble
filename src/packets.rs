@@ -21,9 +21,6 @@ pub enum Packet
 
 impl Packet
 {
-	/*
-	** Yay, builder pattern!
-	*/
 	pub fn new() -> Packet
 	{
 		Packet::New
@@ -121,7 +118,7 @@ impl Packet
 			Err(_) => fail("failed to bind to socket", 2)
 		};
 
-		if sock.connect("localhost:9001").is_err()
+		if sock.connect("magnusi.tech:9001").is_err()
 			{fail("failed to connect to remote host. are you connected to the internet?", 3);}
 
 		let bytes = match self.clone().make()
