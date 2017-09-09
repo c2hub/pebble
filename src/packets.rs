@@ -6,16 +6,18 @@ use std::net::UdpSocket;
 use errors::{fail, fail1};
 
 
+// parts field doubles as port field on return
 #[derive(Clone, Serialize, Deserialize, Debug)]
 pub enum Packet
 {
 	Publish { uname: String, hash: String, file: Vec<u8>, name: String, version: String },
 	Update { data: String },
 	Find { name: String, version: String },
-	Upload { uname: String, hash: String, file: Vec<u8>, name: String, version: String },
+	Upload { uname: String, hash: String, parts: u32, name: String, version: String },
 	Error { msg: String },
 	Register { name: String, hash: String },
 	Login { name: String, hash: String },
+	Transfer { part: u32, bytes: Vec<u8> },
 	New,
 }
 
@@ -69,13 +71,13 @@ impl Packet
 		}
 	}
 
-	pub fn upload(uname: &str, hash: &str, file: Vec<u8>, name: &str, version: &str) -> Packet
+	pub fn upload(uname: &str, hash: &str, parts: u32, name: &str, version: &str) -> Packet
 	{
 		Packet::Upload
 		{
 			uname: uname.to_owned(),
 			hash: hash.to_owned(),
-			file: file,
+			parts: parts,
 			name: name.to_owned(),
 			version: version.to_owned(),
 		}
@@ -91,6 +93,15 @@ impl Packet
 			uname: uname.to_owned(),
 			file: file,
 			version: version.to_owned()
+		}
+	}
+
+	pub fn transfer(part: u32, bytes: Vec<u8>) -> Packet
+	{
+		Packet::Transfer
+		{
+			part: part,
+			bytes: bytes,
 		}
 	}
 
@@ -121,6 +132,38 @@ impl Packet
 		if sock.connect("magnusi.tech:9001").is_err()
 			{fail("failed to connect to remote host. are you connected to the internet?", 3);}
 
+		let bytes = match self.clone().make()
+		{
+			Ok(b) => b,
+			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4)
+		};
+
+		loop
+		{
+			if sock.send(&bytes).is_err()
+				{fail("failed to send data", 5);};
+
+			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
+
+			let res_size = match sock.recv(&mut res_buf)
+			{
+				Ok(s) => s,
+				Err(_) => continue,
+			};
+			let res_buf = &mut res_buf[..res_size];
+
+			let res = match Packet::read(&res_buf.to_vec())
+			{
+				Ok(p) => p,
+				Err(_) => fail("failed to deserialize packet", 6)
+			};
+
+			return res;
+		}
+	}
+
+	pub fn send_to(self, sock: &UdpSocket) -> Packet
+	{
 		let bytes = match self.clone().make()
 		{
 			Ok(b) => b,

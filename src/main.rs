@@ -9,11 +9,11 @@ extern crate serde_cbor;
 extern crate ansi_term;
 extern crate walkdir;
 extern crate hyper;
-extern crate serde;
 extern crate toml;
 extern crate sha1;
 extern crate clap;
 extern crate zip;
+extern crate pbr;
 
 mod commands;
 mod packets;

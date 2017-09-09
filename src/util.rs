@@ -12,4 +12,4 @@ pub const STATICLIB_RECIPE_STUB: &'static str  = include_str!("../inc_files/stat
 pub const SHAREDLIB_HELLO_WORLD: &'static str  = include_str!("../inc_files/sharedlib_hello_world.c2");
 pub const SHAREDLIB_RECIPE_STUB: &'static str  = include_str!("../inc_files/sharedlib_recipe_stub.txt");
 
-
+pub const PACKET_BYTES: u32 = 200;
