@@ -83,10 +83,16 @@ pub fn package() -> Vec<u8>
 			Err(_) => fail("failed to open directory entry for reading", 67)
 		};
 
-		let mut content = String::new();
+		let mut content: Vec<u8> = Vec::new();
 
-		if f.read_to_string(&mut content).is_ok()
-		&& zip.write(&{ let v: Vec<u8> = content.bytes().collect(); v }).is_err()
+		if let Err(e) = f.read_to_end(&mut content)
+		{
+			println!("read error: {}", e);
+		}
+
+		println!("{}", content.len());
+
+		if zip.write_all(&content).is_err()
 			{fail("failed to write file to zip", 68);}
 	}
 
