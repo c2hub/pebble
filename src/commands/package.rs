@@ -90,8 +90,6 @@ pub fn package() -> Vec<u8>
 			println!("read error: {}", e);
 		}
 
-		println!("{}", content.len());
-
 		if zip.write_all(&content).is_err()
 			{fail("failed to write file to zip", 68);}
 	}

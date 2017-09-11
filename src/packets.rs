@@ -140,8 +140,8 @@ impl Packet
 
 		loop
 		{
-			if sock.send(&bytes).is_err()
-				{fail("failed to send data", 5);};
+			if let Err(e) = sock.send(&bytes)
+				{fail1("failed to send data: {}", e, 5);}
 
 			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
 
@@ -172,15 +172,15 @@ impl Packet
 
 		loop
 		{
-			if sock.send(&bytes).is_err()
-				{fail("failed to send data", 5);};
+			if let Err(e) = sock.send(&bytes)
+				{fail1("failed to send data: {}", e, 5);}
 
 			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
 
 			let res_size = match sock.recv(&mut res_buf)
 			{
 				Ok(s) => s,
-				Err(_) => continue,
+				Err(e) => { println!("error: {}", e); continue; },
 			};
 			let res_buf = &mut res_buf[..res_size];
 

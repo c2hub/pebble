@@ -18,6 +18,7 @@ use std::env::temp_dir;
 use std::path::Path;
 use std::fs::File;
 use std::io::Read;
+use std::thread;
 
 pub fn upload()
 {
@@ -86,11 +87,13 @@ pub fn upload()
 		&cfg.pebble.version,
 	).send();
 
+	thread::sleep(Duration::from_millis(1200));
 	match res
 	{
 		Packet::Error { msg } => fail1("packet -> {}", msg, 110),
 		Packet::Upload { parts, .. } =>
 		{
+			println!("{}", parts);
 			// just for clarity
 			let port = parts;
 			let parts = 
@@ -113,6 +116,7 @@ pub fn upload()
 				Yellow.bold().paint("connection")
 			);
 
+			println!("parts: {}", parts);
 			match parts
 			{
 				0 => fail("the data vector is empty", 865),
@@ -134,7 +138,7 @@ pub fn upload()
 				{
 					let mut current_part = 1;
 					let mut pb = ProgressBar::new(parts as u64);
-					let mut current_bytes: Vec<u8> = if PACKET_BYTES as usize > bytes.len()
+					let mut current_bytes: Vec<u8> = if (PACKET_BYTES as usize) < bytes.len()
 						{bytes.drain(..PACKET_BYTES as usize).collect()}
 					else
 						{bytes.drain(..).collect()};
@@ -149,7 +153,6 @@ pub fn upload()
 								if part == parts + 1
 								{
 									pb.inc();
-									pb.finish_print("done");
 									break;
 								}
 								else if part == current_part
@@ -159,7 +162,7 @@ pub fn upload()
 								else
 								{
 									current_part += 1;
-									current_bytes = if PACKET_BYTES as usize > bytes.len()
+									current_bytes = if (PACKET_BYTES as usize) < bytes.len()
 										{bytes.drain(..PACKET_BYTES as usize).collect()}
 									else
 										{bytes.drain(..).collect()};
