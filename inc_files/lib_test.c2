@@ -2,7 +2,7 @@
 module [[name]]_tests;
 import [[name]] as lib;
 
-public func int32 main(int32 argc, char** argv)
+public func i32 main(i32 argc, char** argv)
 {
 	lib.[[name]]_main();
 	return 0;

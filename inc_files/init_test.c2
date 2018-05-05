@@ -9,16 +9,16 @@ import stdio as io;
 */
 
 // your tests here
-public func bool eq(int32 a, int32 b)
+public func bool eq(i32 a, int32 b)
 {
 	return a == b;
 }
 
 
 // add them to main
-public func int32 main(int32 argc, char** argv)
+public func i32 main(i32 argc, char** argv)
 {
-	int32 test_num = 0;
+	i32 test_num = 0;
 	io.printf("test %d %s", ++test_num, seq(5,5) ? "passed" : "failed");
 
 	return 0;
