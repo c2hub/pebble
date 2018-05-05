@@ -169,8 +169,11 @@ fn main() {
 				if let Ok(t) = s.parse() {
 					new_pebble(m.value_of("NAME").unwrap(), t);
 				} else {
-					new_pebble(m.value_of("NAME").unwrap(), PebbleType::Executable);
+					fail1("invalid target kind [{}]", s, 145)
 				}
+			}
+			else {
+				new_pebble(m.value_of("NAME").unwrap(), PebbleType::Executable)
 			}
 		}
 		("init", Some(m)) => {
@@ -206,6 +209,6 @@ fn main() {
 		}
 		("upload", _) => upload(),
 		("publish", _) => publish(),
-		_ => unreachable!(),
+		_ => println!("The Pebble package manager. For help try `pebble help`"),
 	}
 }

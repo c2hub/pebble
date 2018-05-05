@@ -136,7 +136,7 @@ impl Packet {
 			Err(_) => fail("failed to bind to socket", 2),
 		};
 
-		if sock.connect("magnusi.tech:9001").is_err() {
+		if sock.connect("localhost:9001").is_err() {
 			fail(
 				"failed to connect to remote host. are you connected to the internet?",
 				3,

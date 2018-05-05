@@ -17,7 +17,7 @@ impl FromStr for PebbleType {
 			"dynamic" | "dynamiclib" | "sharedlib" | "libshared" | "shared" => {
 				Ok(PebbleType::SharedLib)
 			}
-			"executable" | "bin" | "binary" | "exe" => Ok(PebbleType::StaticLib),
+			"executable" | "bin" | "binary" | "exe" => Ok(PebbleType::Executable),
 			x => Err(PebbleError::new(
 				format!("invalid pebble type string '{}'", x).as_ref(),
 			)),

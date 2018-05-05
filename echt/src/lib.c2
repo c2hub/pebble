@@ -1,0 +1,8 @@
+//hello world for static libraries
+module echt;
+import stdio as io;
+
+public func void echt_main()
+{
+	io.printf("Hello, World!");
+}

@@ -119,7 +119,7 @@ pub fn new_pebble(path_str: &str, kind: PebbleType) {
 		);
 	} else {
 		fail1(
-			"'pebble new' is for new pebbles, did you mean to use 'pebble init {}' instead",
+			"'pebble new' is for new pebbles, did you mean to use 'pebble init {}' instead?",
 			path_str,
 			58,
 		);
