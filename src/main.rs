@@ -3,33 +3,32 @@
 #[macro_use]
 extern crate serde_derive;
 
-extern crate version_compare;
+extern crate ansi_term;
+extern crate clap;
+extern crate hyper;
+extern crate pbr;
 extern crate recipe_reader;
 extern crate serde_cbor;
-extern crate ansi_term;
-extern crate walkdir;
-extern crate hyper;
-extern crate toml;
 extern crate sha1;
-extern crate clap;
+extern crate toml;
+extern crate version_compare;
+extern crate walkdir;
 extern crate zip;
-extern crate pbr;
 
 mod commands;
-mod packets;
 mod config;
 mod errors;
+mod packets;
 mod types;
 mod util;
 
-use types::PebbleType;
-use errors::fail1;
 use commands::*;
+use errors::fail1;
+use types::PebbleType;
 
-use clap::{App, SubCommand, Arg, AppSettings};
+use clap::{App, AppSettings, Arg, SubCommand};
 
-fn main()
-{
+fn main() {
 	// Note: these versions mean percentage to desired functionality, rather than actual version
 	let matches = App::new("pebble")
 		.version("0.8.15")
@@ -164,60 +163,49 @@ fn main()
 			.author("Lukáš Hozda"))
 		.get_matches();
 
-	match matches.subcommand()
-	{
-		("new", Some(m)) =>
-		{
-			if let Some(s) = m.value_of("TYPE")
-			{
-				if let Ok(t) = s.parse()
-				{
+	match matches.subcommand() {
+		("new", Some(m)) => {
+			if let Some(s) = m.value_of("TYPE") {
+				if let Ok(t) = s.parse() {
 					new_pebble(m.value_of("NAME").unwrap(), t);
-				}
-				else
-				{
+				} else {
 					new_pebble(m.value_of("NAME").unwrap(), PebbleType::Executable);
 				}
 			}
-		},
-		("init", Some(m)) =>
-		{
-			if let Some(s) = m.value_of("TYPE")
-			{
-				match s.parse()
-				{
+		}
+		("init", Some(m)) => {
+			if let Some(s) = m.value_of("TYPE") {
+				match s.parse() {
 					Ok(t) => init_pebble(m.value_of("NAME").unwrap(), t),
-					Err(e) => fail1("{}", e, -1)
+					Err(e) => fail1("{}", e, -1),
 				}
-			}
-			else
-			{
+			} else {
 				init_pebble(m.value_of("NAME").unwrap(), PebbleType::Executable);
 			}
-		},
-		("scan",            _) => scan(),
-		("add",       Some(m)) => add(m.value_of("FILENAME").unwrap()),
-		("remove",    Some(m)) => remove(m.value_of("FILENAME").unwrap()),
-		("build",           _) => build(),
-		("run",       Some(m)) => run(m.values_of_lossy("ARGS").unwrap_or(Vec::new())),
-		("test",      Some(m)) => test(m.values_of_lossy("ARGS").unwrap_or(Vec::new())),
-		("install",         _) => install(),
-		("uninstall",       _) => uninstall(),
-		("update",          _) => update(),
-		("find",      Some(m)) => find(m.value_of("NAME").unwrap()),
-		("register",  Some(m)) => register(
-			m.value_of("USERNAME")
-				.unwrap(),
-			m.value_of("PASSWORD").unwrap()
+		}
+		("scan", _) => scan(),
+		("add", Some(m)) => add(m.value_of("FILENAME").unwrap()),
+		("remove", Some(m)) => remove(m.value_of("FILENAME").unwrap()),
+		("build", _) => build(),
+		("run", Some(m)) => run(m.values_of_lossy("ARGS").unwrap_or(Vec::new())),
+		("test", Some(m)) => test(m.values_of_lossy("ARGS").unwrap_or(Vec::new())),
+		("install", _) => install(),
+		("uninstall", _) => uninstall(),
+		("update", _) => update(),
+		("find", Some(m)) => find(m.value_of("NAME").unwrap()),
+		("register", Some(m)) => register(
+			m.value_of("USERNAME").unwrap(),
+			m.value_of("PASSWORD").unwrap(),
 		),
-		("login",     Some(m)) => login(
-			m.value_of("USERNAME")
-				.unwrap(),
-			m.value_of("PASSWORD").unwrap()
+		("login", Some(m)) => login(
+			m.value_of("USERNAME").unwrap(),
+			m.value_of("PASSWORD").unwrap(),
 		),
-		("package", _) => {let _ = package();},
-		("upload",  _) => upload(),
+		("package", _) => {
+			let _ = package();
+		}
+		("upload", _) => upload(),
 		("publish", _) => publish(),
-		_ => unreachable!()
+		_ => unreachable!(),
 	}
 }

@@ -1,12 +1,12 @@
-use packets::Packet;
 use errors::fail1;
+use packets::Packet;
 
-use ansi_term::Colour::{Yellow, Green};
+use ansi_term::Colour::{Green, Yellow};
 use sha1::Sha1;
 
-pub fn register(name: &str, passwd: &str)
-{
-	println!("  {} user {}",
+pub fn register(name: &str, passwd: &str) {
+	println!(
+		"  {} user {}",
 		Yellow.bold().paint("registering"),
 		Green.bold().paint(name)
 	);
@@ -14,18 +14,13 @@ pub fn register(name: &str, passwd: &str)
 	let mut hash = Sha1::new();
 	let bytes: Vec<u8> = passwd.bytes().collect();
 	hash.update(&bytes);
-	let res = Packet::register(name, &hash.digest().to_string())
-		.send();
+	let res = Packet::register(name, &hash.digest().to_string()).send();
 
-	match res
-	{
+	match res {
 		Packet::Error { msg } => fail1("packet -> {}", msg, 72),
-		Packet::Register { .. } =>
-		{
-			println!("  {}",
-				Yellow.bold().paint("registration successful")
-			);
-		},
-		_ => {},
+		Packet::Register { .. } => {
+			println!("  {}", Yellow.bold().paint("registration successful"));
+		}
+		_ => {}
 	}
 }

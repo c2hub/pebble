@@ -5,76 +5,91 @@ use std::net::UdpSocket;
 
 use errors::{fail, fail1};
 
-
 // parts field doubles as port field on return
 #[derive(Clone, Serialize, Deserialize, Debug)]
-pub enum Packet
-{
-	Publish { uname: String, hash: String, file: Vec<u8>, name: String, version: String },
-	Update { data: String },
-	Find { name: String, version: String },
-	Upload { uname: String, hash: String, parts: u32, name: String, version: String },
-	Error { msg: String },
-	Register { name: String, hash: String },
-	Login { name: String, hash: String },
-	Transfer { part: u32, bytes: Vec<u8> },
+pub enum Packet {
+	Publish {
+		uname: String,
+		hash: String,
+		file: Vec<u8>,
+		name: String,
+		version: String,
+	},
+	Update {
+		data: String,
+	},
+	Find {
+		name: String,
+		version: String,
+	},
+	Upload {
+		uname: String,
+		hash: String,
+		parts: u32,
+		name: String,
+		version: String,
+	},
+	Error {
+		msg: String,
+	},
+	Register {
+		name: String,
+		hash: String,
+	},
+	Login {
+		name: String,
+		hash: String,
+	},
+	Transfer {
+		part: u32,
+		bytes: Vec<u8>,
+	},
 	New,
 }
 
-impl Packet
-{
-	pub fn new() -> Packet
-	{
+impl Packet {
+	pub fn new() -> Packet {
 		Packet::New
 	}
 
 	/*
-	** Types
-	*/
-	pub fn error(msg: &str) -> Packet
-	{
-		Packet::Error { msg: msg.to_owned() }
+		** Types
+		*/
+	pub fn error(msg: &str) -> Packet {
+		Packet::Error {
+			msg: msg.to_owned(),
+		}
 	}
 
-	pub fn register(name: &str, hash: &str) -> Packet
-	{
-		Packet::Register
-		{
+	pub fn register(name: &str, hash: &str) -> Packet {
+		Packet::Register {
 			name: name.to_owned(),
 			hash: hash.to_owned(),
 		}
 	}
 
-	pub fn login(name: &str, hash: &str) -> Packet
-	{
-		Packet::Login
-		{
+	pub fn login(name: &str, hash: &str) -> Packet {
+		Packet::Login {
 			name: name.to_owned(),
 			hash: hash.to_owned(),
 		}
 	}
 
-	pub fn update(data: &str) -> Packet
-	{
-		Packet::Update
-		{
+	pub fn update(data: &str) -> Packet {
+		Packet::Update {
 			data: data.to_owned(),
 		}
 	}
 
-	pub fn find(name: &str, version: &str) -> Packet
-	{
-		Packet::Find
-		{
+	pub fn find(name: &str, version: &str) -> Packet {
+		Packet::Find {
 			name: name.to_owned(),
 			version: version.to_owned(),
 		}
 	}
 
-	pub fn upload(uname: &str, hash: &str, parts: u32, name: &str, version: &str) -> Packet
-	{
-		Packet::Upload
-		{
+	pub fn upload(uname: &str, hash: &str, parts: u32, name: &str, version: &str) -> Packet {
+		Packet::Upload {
 			uname: uname.to_owned(),
 			hash: hash.to_owned(),
 			parts: parts,
@@ -83,111 +98,103 @@ impl Packet
 		}
 	}
 
-	pub fn publish(uname: &str, hash: &str, file: Vec<u8>, name: &str, version: &str) -> Packet
-	{
+	pub fn publish(uname: &str, hash: &str, file: Vec<u8>, name: &str, version: &str) -> Packet {
 		let lib_name = "lib".to_string() + name;
-		Packet::Publish
-		{
+		Packet::Publish {
 			name: lib_name.to_owned(),
 			hash: hash.to_owned(),
 			uname: uname.to_owned(),
 			file: file,
-			version: version.to_owned()
+			version: version.to_owned(),
 		}
 	}
 
-	pub fn transfer(part: u32, bytes: Vec<u8>) -> Packet
-	{
-		Packet::Transfer
-		{
+	pub fn transfer(part: u32, bytes: Vec<u8>) -> Packet {
+		Packet::Transfer {
 			part: part,
 			bytes: bytes,
 		}
 	}
 
 	/*
-	** Reading
-	*/
-	pub fn read(source: &[u8]) -> Result<Packet, serde_cbor::error::Error>
-	{
+		** Reading
+		*/
+	pub fn read(source: &[u8]) -> Result<Packet, serde_cbor::error::Error> {
 		serde_cbor::de::from_slice(source)
 	}
 
-	pub fn make(self) -> Result<Vec<u8>, serde_cbor::Error>
-	{
+	pub fn make(self) -> Result<Vec<u8>, serde_cbor::Error> {
 		serde_cbor::ser::to_vec(&self)
 	}
 
 	/*
-	** Sending
-	*/
-	pub fn send(self) -> Packet
-	{
-		let sock = match UdpSocket::bind("0.0.0.0:0")
-		{
+		** Sending
+		*/
+	pub fn send(self) -> Packet {
+		let sock = match UdpSocket::bind("0.0.0.0:0") {
 			Ok(s) => s,
-			Err(_) => fail("failed to bind to socket", 2)
+			Err(_) => fail("failed to bind to socket", 2),
 		};
 
-		if sock.connect("magnusi.tech:9001").is_err()
-			{fail("failed to connect to remote host. are you connected to the internet?", 3);}
+		if sock.connect("magnusi.tech:9001").is_err() {
+			fail(
+				"failed to connect to remote host. are you connected to the internet?",
+				3,
+			);
+		}
 
-		let bytes = match self.clone().make()
-		{
+		let bytes = match self.clone().make() {
 			Ok(b) => b,
-			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4)
+			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4),
 		};
 
-		loop
-		{
-			if let Err(e) = sock.send(&bytes)
-				{fail1("failed to send data: {}", e, 5);}
+		loop {
+			if let Err(e) = sock.send(&bytes) {
+				fail1("failed to send data: {}", e, 5);
+			}
 
 			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
 
-			let res_size = match sock.recv(&mut res_buf)
-			{
+			let res_size = match sock.recv(&mut res_buf) {
 				Ok(s) => s,
 				Err(_) => continue,
 			};
 			let res_buf = &mut res_buf[..res_size];
 
-			let res = match Packet::read(&res_buf.to_vec())
-			{
+			let res = match Packet::read(&res_buf.to_vec()) {
 				Ok(p) => p,
-				Err(_) => fail("failed to deserialize packet", 6)
+				Err(_) => fail("failed to deserialize packet", 6),
 			};
 
 			return res;
 		}
 	}
 
-	pub fn send_to(self, sock: &UdpSocket) -> Packet
-	{
-		let bytes = match self.clone().make()
-		{
+	pub fn send_to(self, sock: &UdpSocket) -> Packet {
+		let bytes = match self.clone().make() {
 			Ok(b) => b,
-			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4)
+			Err(_) => fail1("failed to serialize packet", format!("{:?}", self), 4),
 		};
 
-		loop
-		{
-			if let Err(e) = sock.send(&bytes)
-				{fail1("failed to send data: {}", e, 5);}
+		loop {
+			if let Err(e) = sock.send(&bytes) {
+				fail1("failed to send data: {}", e, 5);
+			}
 
 			let mut res_buf = [0; 64 * 1024]; // maximum response size is 60kb
 
-			let res_size = match sock.recv(&mut res_buf)
-			{
+			let res_size = match sock.recv(&mut res_buf) {
 				Ok(s) => s,
-				Err(e) => { println!("error: {}", e); continue; },
+				Err(e) => {
+					println!("error: {}", e);
+					continue;
+				}
 			};
 			let res_buf = &mut res_buf[..res_size];
 
-			let res = match Packet::read(&res_buf.to_vec())
-			{
+			let res = match Packet::read(&res_buf.to_vec()) {
 				Ok(p) => p,
-				Err(_) => fail("failed to deserialize packet", 6)
+				Err(_) => fail("failed to deserialize packet", 6),
 			};
 
 			return res;
