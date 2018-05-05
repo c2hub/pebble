@@ -1,9 +1,0 @@
-//tests go here
-module echt_tests;
-import echt as lib;
-
-public func int32 main(int32 argc, char** argv)
-{
-	lib.echt_main();
-	return 0;
-}
