@@ -1,0 +1,4 @@
+executable upload
+	$generate-c
+	src/main.c2
+end

@@ -19,7 +19,7 @@ public func bool eq(i32 a, int32 b)
 public func i32 main(i32 argc, char** argv)
 {
 	i32 test_num = 0;
-	io.printf("test %d %s", ++test_num, seq(5,5) ? "passed" : "failed");
+	io.printf("test %d %s", ++test_num, eq(5,5) ? "passed" : "failed");
 
 	return 0;
 }
